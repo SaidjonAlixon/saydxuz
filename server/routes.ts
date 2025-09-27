@@ -1,15 +1,305 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { insertLeadSchema, insertServiceSchema, insertPortfolioSchema, insertArticleSchema } from "@shared/schema";
+import multer from "multer";
+import path from "path";
+import { randomUUID } from "crypto";
+
+// File upload configuration
+const upload = multer({
+  dest: 'uploads/',
+  limits: {
+    fileSize: 15 * 1024 * 1024, // 15MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['.pdf', '.doc', '.docx', '.jpg', '.jpeg', '.png'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowedTypes.includes(ext)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Faqat PDF, DOC, DOCX, JPG, JPEG, PNG formatdagi fayllar ruxsat etilgan'));
+    }
+  }
+});
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // put application routes here
-  // prefix all routes with /api
+  // Lead management routes
+  app.post("/api/leads", upload.single('file'), async (req, res) => {
+    try {
+      const leadData = {
+        ...req.body,
+        fileUrl: req.file ? `/uploads/${req.file.filename}` : null
+      };
+      
+      const validatedData = insertLeadSchema.parse(leadData);
+      const lead = await storage.createLead(validatedData);
+      
+      // Here you could send email notification
+      console.log(`New lead received: ${lead.name} - ${lead.serviceType}`);
+      
+      res.status(201).json({ 
+        success: true, 
+        message: "Ariza muvaffaqiyatli yuborildi",
+        leadId: lead.id 
+      });
+    } catch (error) {
+      console.error("Lead creation error:", error);
+      res.status(400).json({ 
+        success: false, 
+        message: "Ma'lumotlarda xatolik bor", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
 
-  // use storage to perform CRUD operations on the storage interface
-  // e.g. storage.insertUser(user) or storage.getUserByUsername(username)
+  app.get("/api/leads", async (req, res) => {
+    try {
+      const leads = await storage.getLeads();
+      res.json({ success: true, data: leads });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Ma'lumotlarni olishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  app.get("/api/leads/:id", async (req, res) => {
+    try {
+      const lead = await storage.getLead(req.params.id);
+      if (!lead) {
+        return res.status(404).json({ success: false, message: "Ariza topilmadi" });
+      }
+      res.json({ success: true, data: lead });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Ma'lumotni olishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  app.patch("/api/leads/:id/status", async (req, res) => {
+    try {
+      const { status } = req.body;
+      const lead = await storage.updateLeadStatus(req.params.id, status);
+      if (!lead) {
+        return res.status(404).json({ success: false, message: "Ariza topilmadi" });
+      }
+      res.json({ success: true, data: lead });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Statusni yangilashda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  // Service management routes
+  app.get("/api/services", async (req, res) => {
+    try {
+      const services = await storage.getActiveServices();
+      res.json({ success: true, data: services });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Xizmatlarni olishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  app.get("/api/services/:slug", async (req, res) => {
+    try {
+      const service = await storage.getService(req.params.slug);
+      if (!service) {
+        return res.status(404).json({ success: false, message: "Xizmat topilmadi" });
+      }
+      res.json({ success: true, data: service });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Xizmatni olishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  app.post("/api/services", async (req, res) => {
+    try {
+      const validatedData = insertServiceSchema.parse(req.body);
+      const service = await storage.createService(validatedData);
+      res.status(201).json({ success: true, data: service });
+    } catch (error) {
+      res.status(400).json({ 
+        success: false, 
+        message: "Xizmat yaratishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  // Portfolio routes
+  app.get("/api/portfolio", async (req, res) => {
+    try {
+      const portfolios = await storage.getPublicPortfolios();
+      res.json({ success: true, data: portfolios });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Portfolio ma'lumotlarini olishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  app.get("/api/portfolio/:id", async (req, res) => {
+    try {
+      const portfolio = await storage.getPortfolio(req.params.id);
+      if (!portfolio || portfolio.isPublic !== "true") {
+        return res.status(404).json({ success: false, message: "Portfolio topilmadi" });
+      }
+      res.json({ success: true, data: portfolio });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Portfolio ma'lumotini olishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  app.post("/api/portfolio", async (req, res) => {
+    try {
+      const validatedData = insertPortfolioSchema.parse(req.body);
+      const portfolio = await storage.createPortfolio(validatedData);
+      res.status(201).json({ success: true, data: portfolio });
+    } catch (error) {
+      res.status(400).json({ 
+        success: false, 
+        message: "Portfolio yaratishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  // Article routes
+  app.get("/api/articles", async (req, res) => {
+    try {
+      const articles = await storage.getPublishedArticles();
+      res.json({ success: true, data: articles });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Maqolalarni olishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  app.get("/api/articles/:slug", async (req, res) => {
+    try {
+      const article = await storage.getArticle(req.params.slug);
+      if (!article || article.isPublished !== "true") {
+        return res.status(404).json({ success: false, message: "Maqola topilmadi" });
+      }
+      
+      // Increment view count
+      await storage.incrementArticleViews(req.params.slug);
+      
+      res.json({ success: true, data: article });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Maqolani olishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  app.post("/api/articles", async (req, res) => {
+    try {
+      const validatedData = insertArticleSchema.parse(req.body);
+      const article = await storage.createArticle(validatedData);
+      res.status(201).json({ success: true, data: article });
+    } catch (error) {
+      res.status(400).json({ 
+        success: false, 
+        message: "Maqola yaratishda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
+
+  // Serve uploaded files
+  app.use('/uploads', (req, res, next) => {
+    // Add some basic security
+    const filename = req.path.slice(1); // Remove leading slash
+    if (!/^[a-zA-Z0-9.-]+$/.test(filename)) {
+      return res.status(400).json({ error: "Noto'g'ri fayl nomi" });
+    }
+    next();
+  });
+
+  // Calculator price estimation endpoint
+  app.post("/api/calculator/estimate", async (req, res) => {
+    try {
+      const { serviceType, features = [], timeline = "standard" } = req.body;
+      
+      // Get service base price
+      const service = await storage.getService(serviceType);
+      if (!service) {
+        return res.status(404).json({ success: false, message: "Xizmat topilmadi" });
+      }
+      
+      let totalPrice = service.basePrice;
+      
+      // Add feature costs (simplified pricing logic)
+      const featurePrices: Record<string, number> = {
+        "admin-panel": 150000,
+        "payment": 200000,
+        "analytics": 100000,
+        "api": 180000,
+        "seo": 120000
+      };
+      
+      features.forEach((feature: string) => {
+        totalPrice += featurePrices[feature] || 0;
+      });
+      
+      // Apply timeline modifier
+      const timelineModifiers: Record<string, number> = {
+        "standard": 0,
+        "fast": 300000,
+        "premium": 500000
+      };
+      
+      totalPrice += timelineModifiers[timeline] || 0;
+      
+      res.json({
+        success: true,
+        data: {
+          basePrice: service.basePrice,
+          featuresPrice: features.reduce((sum: number, f: string) => sum + (featurePrices[f] || 0), 0),
+          timelinePrice: timelineModifiers[timeline] || 0,
+          totalPrice,
+          serviceName: service.name,
+          duration: service.duration
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: "Narxni hisoblashda xatolik", 
+        error: error instanceof Error ? error.message : "Unknown error" 
+      });
+    }
+  });
 
   const httpServer = createServer(app);
-
   return httpServer;
 }

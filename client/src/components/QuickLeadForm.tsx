@@ -94,27 +94,59 @@ export default function QuickLeadForm() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
-      console.log("Lead form submitted:", formData);
-      toast({
-        title: "Ariza yuborildi!",
-        description: "Tez orada siz bilan bog'lanamiz"
-      });
-      setIsSubmitting(false);
+    try {
+      const formDataToSubmit = new FormData();
+      formDataToSubmit.append('name', formData.name);
+      formDataToSubmit.append('phone', formData.phone);
+      formDataToSubmit.append('serviceType', formData.service);
       
-      // Reset form
-      setFormData({
-        name: "",
-        phone: "",
-        telegram: "",
-        service: "",
-        budget: "",
-        timeline: "",
-        description: "",
-        file: null
+      if (formData.telegram) formDataToSubmit.append('telegram', formData.telegram);
+      if (formData.budget) formDataToSubmit.append('budget', formData.budget);
+      if (formData.timeline) formDataToSubmit.append('timeline', formData.timeline);
+      if (formData.description) formDataToSubmit.append('description', formData.description);
+      if (formData.file) formDataToSubmit.append('file', formData.file);
+      
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        body: formDataToSubmit
       });
-    }, 2000);
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        toast({
+          title: "Ariza yuborildi!",
+          description: "Tez orada siz bilan bog'lanamiz"
+        });
+        
+        // Reset form
+        setFormData({
+          name: "",
+          phone: "",
+          telegram: "",
+          service: "",
+          budget: "",
+          timeline: "",
+          description: "",
+          file: null
+        });
+      } else {
+        toast({
+          title: "Xatolik!",
+          description: result.message || "Arizani yuborishda xatolik yuz berdi",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error("Submit error:", error);
+      toast({
+        title: "Xatolik!",
+        description: "Tarmoq xatoligi. Iltimos qaytadan urinib ko'ring",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const isFormValid = formData.name && formData.phone && formData.service;
