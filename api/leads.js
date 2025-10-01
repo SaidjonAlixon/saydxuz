@@ -1,8 +1,7 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { storage } from '../server/storage';
-import { insertLeadSchema } from '@shared/schema';
+const { storage } = require('../server/storage');
+const { insertLeadSchema } = require('@shared/schema');
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const validatedData = insertLeadSchema.parse(req.body);
@@ -35,4 +34,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Allow', ['GET', 'POST']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
-}
+};

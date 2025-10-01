@@ -1,7 +1,6 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { storage } from '../server/storage';
+const { storage } = require('../server/storage');
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const portfolios = await storage.getPublicPortfolios();
@@ -17,4 +16,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Allow', ['GET']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
-}
+};
