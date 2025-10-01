@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,20 +20,28 @@ interface FormData {
   file: File | null;
 }
 
+interface QuickLeadFormProps {
+  defaultService?: string;
+}
+
 const services = [
   "Telegram Bot",
   "Veb-sayt",
   "Sheets Avtomatlashtirish", 
   "UI/UX Dizayn",
   "Mini-ilova",
-  "Target Reklama"
+  "Target Reklama",
+  "Mobil ilovalar",
+  "Avtomatlashtirilgan AyTi xizmatlar",
+  "Mijoz talabi asosida"
 ];
 
 const budgetRanges = [
-  "300,000 - 500,000 so'm",
-  "500,000 - 1,000,000 so'm", 
-  "1,000,000 - 2,000,000 so'm",
-  "2,000,000+ so'm"
+  "$100 - $300",
+  "$300 - $500", 
+  "$500 - $1,000",
+  "$1,000 - $1,500",
+  "$1,500+"
 ];
 
 const timelines = [
@@ -43,19 +51,25 @@ const timelines = [
   "Muddati muhim emas"
 ];
 
-export default function QuickLeadForm() {
+export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = { defaultService: undefined }) {
   const { toast } = useToast();
   const [formData, setFormData] = useState<FormData>({
     name: "",
     phone: "",
     telegram: "",
-    service: "",
+    service: defaultService || "",
     budget: "",
     timeline: "",
     description: "",
     file: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (defaultService) {
+      setFormData(prev => ({ ...prev, service: defaultService }));
+    }
+  }, [defaultService]);
 
   const formatPhoneNumber = (value: string) => {
     const numbers = value.replace(/\D/g, '');
@@ -115,8 +129,8 @@ export default function QuickLeadForm() {
       
       if (result.success) {
         toast({
-          title: "Ariza yuborildi!",
-          description: "Tez orada siz bilan bog'lanamiz"
+          title: "Buyurtma qabul qilindi!",
+          description: "Tez orada siz bilan bog'lanamiz. Rahmat!"
         });
         
         // Reset form
@@ -124,7 +138,7 @@ export default function QuickLeadForm() {
           name: "",
           phone: "",
           telegram: "",
-          service: "",
+          service: defaultService || "",
           budget: "",
           timeline: "",
           description: "",

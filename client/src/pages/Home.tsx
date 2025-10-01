@@ -2,6 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users, Star, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import { useLocation } from "wouter";
 import HeroSection from "@/components/HeroSection";
 import ServiceGrid from "@/components/ServiceGrid";
 import NewsCard from "@/components/NewsCard";
@@ -64,39 +66,69 @@ const portfolioData = [
 ];
 
 export default function Home() {
+  const [, setLocation] = useLocation();
+  
   return (
     <div className="space-y-12">
       {/* Hero Section */}
       <HeroSection />
 
       {/* Stats Section */}
-      <section className="py-8 px-4">
+      <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card className="text-center p-4">
-              <CardContent className="pt-2">
-                <div className="text-2xl font-bold text-primary">50+</div>
-                <div className="text-sm text-muted-foreground">Bajarilgan loyiha</div>
-              </CardContent>
-            </Card>
-            <Card className="text-center p-4">
-              <CardContent className="pt-2">
-                <div className="text-2xl font-bold text-primary">30+</div>
-                <div className="text-sm text-muted-foreground">Mamnun mijoz</div>
-              </CardContent>
-            </Card>
-            <Card className="text-center p-4">
-              <CardContent className="pt-2">
-                <div className="text-2xl font-bold text-primary">4.9</div>
-                <div className="text-sm text-muted-foreground">Reyting</div>
-              </CardContent>
-            </Card>
-            <Card className="text-center p-4">
-              <CardContent className="pt-2">
-                <div className="text-2xl font-bold text-primary">24/7</div>
-                <div className="text-sm text-muted-foreground">Yordam</div>
-              </CardContent>
-            </Card>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0 }}
+            >
+              <Card className="text-center p-4 hover:shadow-lg transition-shadow">
+                <CardContent className="pt-2">
+                  <div className="text-2xl font-bold text-primary">50+</div>
+                  <div className="text-sm text-muted-foreground">Bajarilgan loyiha</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <Card className="text-center p-4 hover:shadow-lg transition-shadow">
+                <CardContent className="pt-2">
+                  <div className="text-2xl font-bold text-primary">30+</div>
+                  <div className="text-sm text-muted-foreground">Mamnun mijoz</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card className="text-center p-4 hover:shadow-lg transition-shadow">
+                <CardContent className="pt-2">
+                  <div className="text-2xl font-bold text-primary">4.9</div>
+                  <div className="text-sm text-muted-foreground">Reyting</div>
+                </CardContent>
+              </Card>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Card className="text-center p-4 hover:shadow-lg transition-shadow">
+                <CardContent className="pt-2">
+                  <div className="text-2xl font-bold text-primary">24/7</div>
+                  <div className="text-sm text-muted-foreground">Yordam</div>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -105,13 +137,27 @@ export default function Home() {
       <ServiceGrid />
 
       {/* Portfolio Section */}
-      <section className="py-12 px-4 bg-muted/30">
+      <section className="py-16 px-4 bg-muted/30">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Bajarilgan ishlar</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <motion.h2 
+              className="text-3xl md:text-4xl font-bold mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              Bajarilgan ishlar
+            </motion.h2>
+            <motion.p 
+              className="text-lg text-muted-foreground max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
               Mijozlarimiz uchun yaratgan eng muvaffaqiyatli loyihalar va ularning natijalari
-            </p>
+            </motion.p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -125,7 +171,7 @@ export default function Home() {
               variant="outline" 
               size="lg"
               data-testid="button-view-all-portfolio"
-              onClick={() => console.log("View all portfolio triggered")}
+              onClick={() => setLocation("/portfolio")}
             >
               Barcha ishlarni ko'rish
               <ArrowRight className="w-4 h-4 ml-2" />
@@ -135,13 +181,27 @@ export default function Home() {
       </section>
 
       {/* News Section */}
-      <section className="py-12 px-4">
+      <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">So'nggi yangiliklar</h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              IT sohasidagi eng so'nggi yangiliklar va foydali maslahatlar
-            </p>
+            <motion.h2 
+              className="text-3xl md:text-4xl font-bold mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              So'nggi yangiliklar
+            </motion.h2>
+            <motion.p 
+              className="text-lg text-muted-foreground max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+            >
+              AyTi sohasidagi eng so'nggi yangiliklar va foydali maslahatlar
+            </motion.p>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -165,19 +225,38 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-12 px-4 bg-gradient-to-br from-primary/10 to-accent/10">
+      <section className="py-16 px-4 bg-gradient-to-br from-primary/10 to-accent/10">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <motion.h2 
+            className="text-3xl md:text-4xl font-bold mb-4"
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
             Loyihangizni bugun boshlaylik!
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Biznes ehtiyojlaringizni professional IT yechimlar bilan hal qilish uchun biz bilan bog'laning
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          </motion.h2>
+          <motion.p 
+            className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
+            Biznes ehtiyojlaringizni professional AyTi yechimlar bilan hal qilish uchun biz bilan bog'laning
+          </motion.p>
+          <motion.div 
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
             <Button 
               size="lg"
               data-testid="button-cta-request"
               onClick={() => console.log("CTA request triggered")}
+              className="hover:scale-105 transition-transform"
             >
               <ArrowRight className="w-5 h-5 mr-2" />
               Bepul maslahat olish
@@ -187,10 +266,11 @@ export default function Home() {
               size="lg"
               data-testid="button-cta-call"
               onClick={() => console.log("CTA call triggered")}
+              className="hover:scale-105 transition-transform"
             >
               Qo'ng'iroq qilish
             </Button>
-          </div>
+          </motion.div>
         </div>
       </section>
     </div>

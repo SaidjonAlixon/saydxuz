@@ -1,4 +1,4 @@
-import { Bot, Globe, FileSpreadsheet, Palette, Smartphone, Target } from "lucide-react";
+import { Bot, Globe, FileSpreadsheet, Palette, Smartphone, Target, Cpu, Wrench } from "lucide-react";
 import ServiceCard from "./ServiceCard";
 import { useQuery } from "@tanstack/react-query";
 
@@ -8,15 +8,18 @@ const iconMap: Record<string, React.ReactNode> = {
   "Sheets Avtomatlashtirish": <FileSpreadsheet className="w-5 h-5" />,
   "UI/UX Dizayn": <Palette className="w-5 h-5" />,
   "Mini-ilova": <Smartphone className="w-5 h-5" />,
-  "Target Reklama": <Target className="w-5 h-5" />
+  "Telegram Target": <Target className="w-5 h-5" />,
+  "Mobil ilovalar": <Smartphone className="w-5 h-5" />,
+  "Avtomatlashtirilgan AyTi xizmatlar": <Cpu className="w-5 h-5" />,
+  "Mijoz talabi asosida": <Wrench className="w-5 h-5" />
 };
 
 const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('uz-UZ').format(price) + " so'mdan";
+  return "$" + price.toLocaleString('en-US') + "+";
 };
 
 export default function ServiceGrid() {
-  const { data: servicesData, isLoading } = useQuery({
+  const { data: servicesData, isLoading } = useQuery<{ success: boolean; data: any[] }>({
     queryKey: ['/api/services'],
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -30,7 +33,7 @@ export default function ServiceGrid() {
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">Bizning Xizmatlar</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Biznesingizni rivojlantirish uchun zamonaviy IT yechimlar va professional xizmatlar
+              Biznesingizni rivojlantirish uchun zamonaviy AyTi yechimlar va professional xizmatlar
             </p>
           </div>
           
@@ -50,7 +53,7 @@ export default function ServiceGrid() {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Bizning Xizmatlar</h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Biznesingizni rivojlantirish uchun zamonaviy IT yechimlar va professional xizmatlar
+            Biznesingizni rivojlantirish uchun zamonaviy AyTi yechimlar va professional xizmatlar
           </p>
         </div>
         
@@ -66,6 +69,7 @@ export default function ServiceGrid() {
               category={service.category}
               icon={iconMap[service.name] || <Bot className="w-5 h-5" />}
               features={service.features}
+              slug={service.slug}
             />
           ))}
         </div>

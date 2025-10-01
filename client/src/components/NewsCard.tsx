@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, ArrowRight, Eye } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface NewsCardProps {
   title: string;
@@ -23,7 +24,14 @@ export default function NewsCard({
   image
 }: NewsCardProps) {
   return (
-    <Card className="overflow-hidden hover-elevate transition-all duration-300">
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5 }}
+      whileHover={{ scale: 1.02 }}
+    >
+      <Card className="overflow-hidden hover-elevate transition-all duration-300 hover:shadow-xl">
       {image && (
         <div className="aspect-video bg-gradient-to-br from-primary/10 to-accent/10">
           <img 
@@ -74,5 +82,6 @@ export default function NewsCard({
         </div>
       </CardContent>
     </Card>
+    </motion.div>
   );
 }

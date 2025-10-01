@@ -8,7 +8,7 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { href: "/", label: "Bosh", icon: Home },
+  { href: "/", label: "Asosiy", icon: Home },
   { href: "/xizmatlar", label: "Xizmatlar", icon: Settings },
   { href: "/portfolio", label: "Portfolio", icon: Briefcase },
   { href: "/ariza", label: "Ariza", icon: FileText },
@@ -16,7 +16,7 @@ const navItems: NavItem[] = [
 ];
 
 export default function BottomNavigation() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-sm border-t border-border z-50">
@@ -28,10 +28,7 @@ export default function BottomNavigation() {
           return (
             <button
               key={item.href}
-              onClick={() => {
-                console.log(`Navigating to ${item.href}`);
-                window.history.pushState({}, "", item.href);
-              }}
+              onClick={() => setLocation(item.href)}
               className={`flex flex-col items-center justify-center min-w-[44px] min-h-[44px] p-1 rounded-lg transition-colors ${
                 isActive 
                   ? "text-primary bg-primary/10" 

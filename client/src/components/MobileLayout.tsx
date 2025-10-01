@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 import BottomNavigation from "./BottomNavigation";
 import ThemeToggle from "./ThemeToggle";
 import QuickLeadForm from "./QuickLeadForm";
+import logoImage from "@assets/logo_ai.png";
 
 interface MobileLayoutProps {
   children: React.ReactNode;
@@ -18,9 +19,11 @@ export default function MobileLayout({ children }: MobileLayoutProps) {
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur-sm border-b border-border">
         <div className="flex items-center justify-between px-4 py-3">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">SX</span>
-            </div>
+            <img 
+              src={logoImage} 
+              alt="SAYD.X Logo" 
+              className="w-8 h-8 object-contain"
+            />
             <span className="font-bold text-lg">SAYD.X</span>
           </div>
           
