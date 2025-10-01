@@ -1,7 +1,7 @@
-const { storage } = require('../server/storage');
-const { insertLeadSchema } = require('@shared/schema');
+import { storage } from '../server/storage.js';
+import { insertLeadSchema } from '@shared/schema.js';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       const validatedData = insertLeadSchema.parse(req.body);

@@ -1,6 +1,6 @@
-const { storage } = require('../server/storage');
+import { storage } from '../server/storage.js';
 
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   if (req.method === 'GET') {
     try {
       const services = await storage.getActiveServices();
