@@ -130,7 +130,9 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
       if (result.success) {
         toast({
           title: "Buyurtma qabul qilindi!",
-          description: "Tez orada siz bilan bog'lanamiz. Rahmat!"
+          description: result.telegramSent 
+            ? "Arizangiz Telegram kanalga yuborildi. Tez orada siz bilan bog'lanamiz. Rahmat!"
+            : "Tez orada siz bilan bog'lanamiz. Rahmat!"
         });
         
         // Reset form
@@ -166,7 +168,7 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
   const isFormValid = formData.name && formData.phone && formData.service;
 
   return (
-    <Card className="w-full max-w-lg mx-auto">
+    <Card className="w-full max-w-2xl mx-auto max-h-[90vh] overflow-y-auto">
       <CardHeader>
         <CardTitle>Tez Ariza Yuborish</CardTitle>
         <CardDescription>
@@ -174,8 +176,8 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
         </CardDescription>
       </CardHeader>
       
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      <CardContent className="p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="name">Ism-familiya *</Label>
             <Input

@@ -14,7 +14,7 @@ export default function Services() {
   return (
     <div className="min-h-screen">
       {/* Header with Back Button */}
-      <div className="bg-gradient-to-br from-primary/10 to-accent/10 py-8 px-4">
+      <div className="bg-gradient-to-br from-primary/10 to-accent/10 py-2 px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -25,30 +25,13 @@ export default function Services() {
               variant="ghost"
               size="sm"
               onClick={() => setLocation("/")}
-              className="mb-4"
+              className="mb-1"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Orqaga
             </Button>
           </motion.div>
           
-          <motion.h1 
-            className="text-3xl md:text-5xl font-bold mb-4"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            Bizning Xizmatlar
-          </motion.h1>
-          <motion.p 
-            className="text-lg text-muted-foreground max-w-3xl"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            Biznesingizni raqamlashtirish va avtomatlashtirish uchun zamonaviy AyTi yechimlar. 
-            Telegram botlardan tortib to'liq funktsional veb-saytlargacha - barchasini professional darajada taqdim etamiz.
-          </motion.p>
         </div>
       </div>
 

@@ -1,7 +1,10 @@
+import 'dotenv/config';
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertLeadSchema, insertServiceSchema, insertPortfolioSchema, insertArticleSchema } from "@shared/schema";
+// @ts-ignore
+import { sendLeadToTelegram } from "./telegram.js";
 import multer from "multer";
 import path from "path";
 import { randomUUID } from "crypto";
@@ -38,10 +41,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Here you could send email notification
       console.log(`New lead received: ${lead.name} - ${lead.serviceType}`);
       
+      // Telegram kanalga yuborish
+      console.log('Telegram yuborishga harakat qilinmoqda...');
+      console.log('Bot token mavjudmi:', !!process.env.TELEGRAM_BOT_TOKEN);
+      console.log('Kanal ID mavjudmi:', !!process.env.TELEGRAM_CHANNEL_ID);
+      
+      const telegramResult = await sendLeadToTelegram(lead);
+      console.log('Telegram yuborish natijasi:', telegramResult);
+      
       res.status(201).json({ 
         success: true, 
         message: "Ariza muvaffaqiyatli yuborildi",
-        leadId: lead.id 
+        leadId: lead.id,
+        telegramSent: telegramResult.success
       });
     } catch (error) {
       console.error("Lead creation error:", error);

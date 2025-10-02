@@ -87,7 +87,7 @@ export default function Help() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            Ko'mak va qo'llab-quvvatlash
+            Yordam va qo'llab-quvvatlash
           </motion.h1>
           <motion.p 
             className="text-lg text-muted-foreground max-w-3xl"

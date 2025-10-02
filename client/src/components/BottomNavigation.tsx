@@ -12,7 +12,7 @@ const navItems: NavItem[] = [
   { href: "/xizmatlar", label: "Xizmatlar", icon: Settings },
   { href: "/portfolio", label: "Portfolio", icon: Briefcase },
   { href: "/ariza", label: "Ariza", icon: FileText },
-  { href: "/yordam", label: "Ko'mak", icon: HelpCircle },
+  { href: "/yordam", label: "Yordam", icon: HelpCircle },
 ];
 
 export default function BottomNavigation() {
