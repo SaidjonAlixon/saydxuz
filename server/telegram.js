@@ -5,8 +5,9 @@ let bot = null;
 
 // Bot ni ishga tushirish funksiyasi
 function initializeBot() {
-  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-  const CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID;
+  // To'g'ridan-to'g'ri kodga kiritilgan qiymatlar
+  const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8035044995:AAEaf8t64VzYT8fyxFnowXe474wQBAhrA1k';
+  const CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID || '-1002663722196';
   
   console.log('Bot token:', BOT_TOKEN ? 'mavjud' : 'yo\'q');
   console.log('Kanal ID:', CHANNEL_ID ? 'mavjud' : 'yo\'q');

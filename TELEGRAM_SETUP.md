@@ -52,3 +52,4 @@ Agar xabar yuborilmasa:
 - Kanal ID to'g'ri ekanligini tekshiring
 - Bot kanalda admin ekanligini tekshiring
 - Console'da xatolik xabarlarini ko'ring
+
