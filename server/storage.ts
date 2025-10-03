@@ -251,11 +251,19 @@ export class MemStorage implements IStorage {
   }
 
   async getServices(): Promise<Service[]> {
-    return Array.from(this.services.values());
+    console.log('MemStorage getServices called, services count:', this.services.size);
+    const services = Array.from(this.services.values());
+    console.log('Returning services:', services.length);
+    return services;
   }
 
   async getActiveServices(): Promise<Service[]> {
-    return Array.from(this.services.values()).filter(s => s.isActive === "true");
+    console.log('MemStorage getActiveServices called, services count:', this.services.size);
+    const allServices = Array.from(this.services.values());
+    console.log('All services:', allServices.length);
+    const activeServices = allServices.filter(s => s.isActive === "true");
+    console.log('Active services:', activeServices.length);
+    return activeServices;
   }
 
   // Portfolio methods

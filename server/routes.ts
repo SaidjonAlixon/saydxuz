@@ -127,6 +127,90 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/services", async (req, res) => {
     try {
       const services = await storage.getActiveServices();
+      
+      // Agar xizmatlar bo'sh bo'lsa, default xizmatlarni qaytaramiz
+      if (services.length === 0) {
+        const defaultServices = [
+          {
+            id: "1",
+            name: "Veb-sayt yaratish",
+            slug: "veb-sayt",
+            shortDescription: "Zamonaviy va responsive veb-saytlar",
+            fullDescription: "Biznesingiz uchun professional veb-sayt yaratamiz. Responsive dizayn, tez yuklanish va SEO optimizatsiya bilan.",
+            category: "Veb-sayt",
+            basePrice: 500,
+            duration: "2-4 hafta",
+            rating: "4.9",
+            features: ["Responsive dizayn", "SEO optimizatsiya", "Tez yuklanish", "Mobil optimizatsiya"],
+            calculatorParams: null,
+            isActive: "true",
+            createdAt: new Date()
+          },
+          {
+            id: "2",
+            name: "Telegram bot",
+            slug: "telegram-bot",
+            shortDescription: "Telegram botlar yaratish va sozlash",
+            fullDescription: "Biznesingiz uchun professional Telegram bot yaratamiz. Avtomatlashtirish, xabarlar yuborish va mijozlar bilan aloqa.",
+            category: "Bot",
+            basePrice: 300,
+            duration: "1-2 hafta",
+            rating: "4.8",
+            features: ["Avtomatik javoblar", "Fayl yuklash", "Ma'lumotlar bazasi", "Admin panel"],
+            calculatorParams: null,
+            isActive: "true",
+            createdAt: new Date()
+          },
+          {
+            id: "3",
+            name: "Mobil ilova",
+            slug: "mobil-ilova",
+            shortDescription: "iOS va Android ilovalar",
+            fullDescription: "Cross-platform mobil ilovalar yaratamiz. React Native va Flutter texnologiyalari bilan.",
+            category: "Mobil",
+            basePrice: 1000,
+            duration: "6-8 hafta",
+            rating: "4.7",
+            features: ["Cross-platform", "Native performance", "Push notifications", "Offline mode"],
+            calculatorParams: null,
+            isActive: "true",
+            createdAt: new Date()
+          },
+          {
+            id: "4",
+            name: "Target Reklama",
+            slug: "target-reklama",
+            shortDescription: "Facebook, Instagram, Google reklama",
+            fullDescription: "Sosial tarmoqlarda professional reklama kampaniyalari. ROI optimizatsiya va natijaviy reklama.",
+            category: "Marketing",
+            basePrice: 200,
+            duration: "1 hafta",
+            rating: "4.6",
+            features: ["Audience targeting", "A/B testing", "Analytics", "ROI optimization"],
+            calculatorParams: null,
+            isActive: "true",
+            createdAt: new Date()
+          },
+          {
+            id: "5",
+            name: "Sheets Avtomatlashtirish",
+            slug: "sheets-avtomatlashtirish",
+            shortDescription: "Google Sheets va Excel avtomatlashtirish",
+            fullDescription: "Google Sheets va Excel fayllarini avtomatlashtirish. Makrolar, formulalar va integratsiyalar.",
+            category: "Avtomatlashtirish",
+            basePrice: 150,
+            duration: "1-2 hafta",
+            rating: "4.5",
+            features: ["Macro yozish", "Formula optimizatsiya", "Data integration", "Automation"],
+            calculatorParams: null,
+            isActive: "true",
+            createdAt: new Date()
+          }
+        ];
+        res.json({ success: true, data: defaultServices });
+        return;
+      }
+      
       res.json({ success: true, data: services });
     } catch (error) {
       res.status(500).json({ 
