@@ -36,10 +36,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       const validatedData = insertLeadSchema.parse(leadData);
-      const lead = await storage.createLead(validatedData);
       
-      // Here you could send email notification
-      console.log(`New lead received: ${lead.name} - ${lead.serviceType}`);
+      // Vercel'da database muammosi bo'lsa ham Telegram'ga yuborish
+      let lead;
+      try {
+        lead = await storage.createLead(validatedData);
+        console.log(`New lead received: ${lead.name} - ${lead.serviceType}`);
+      } catch (dbError) {
+        console.log('Database error, but continuing with Telegram:', dbError);
+        // Database muammosi bo'lsa ham Telegram'ga yuboramiz
+        lead = {
+          ...validatedData,
+          id: randomUUID(),
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+      }
       
       // Telegram kanalga yuborish
       console.log('Telegram yuborishga harakat qilinmoqda...');
@@ -49,18 +61,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const telegramResult = await sendLeadToTelegram(lead);
       console.log('Telegram yuborish natijasi:', telegramResult);
       
-      res.status(201).json({ 
-        success: true, 
+      res.status(201).json({
+        success: true,
         message: "Ariza muvaffaqiyatli yuborildi",
         leadId: lead.id,
         telegramSent: telegramResult.success
       });
     } catch (error) {
       console.error("Lead creation error:", error);
-      res.status(400).json({ 
-        success: false, 
-        message: "Ma'lumotlarda xatolik bor", 
-        error: error instanceof Error ? error.message : "Unknown error" 
+      res.status(400).json({
+        success: false,
+        message: "Ma'lumotlarda xatolik bor",
+        error: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });
