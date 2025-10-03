@@ -9,6 +9,8 @@ import {
   type InsertArticle 
 } from "@shared/schema";
 import { randomUUID } from "crypto";
+import { SQLiteStorage } from "./sqliteStorage";
+import { initializeDatabase } from "./database";
 
 export interface IStorage {
   // Lead management
@@ -327,4 +329,14 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+// SQLite storage'ni ishga tushiramiz
+const sqliteStorage = new SQLiteStorage();
+
+// Database'ni ishga tushiramiz
+const dbInitialized = initializeDatabase();
+
+if (!dbInitialized) {
+  console.error('Failed to initialize SQLite database, falling back to MemStorage');
+}
+
+export const storage = dbInitialized ? sqliteStorage : new MemStorage();

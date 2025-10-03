@@ -1,11 +1,11 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer, json } from "drizzle-orm/pg-core";
+import { sqliteTable, text, integer, real } from "drizzle-orm/sqlite-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Lead table for storing client requests
-export const leads = pgTable("leads", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const leads = sqliteTable("leads", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
   phone: text("phone").notNull(),
   telegram: text("telegram"),
@@ -16,13 +16,13 @@ export const leads = pgTable("leads", {
   description: text("description"),
   fileUrl: text("file_url"),
   source: text("source").notNull().default("website"), // website, calculator
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: integer("created_at", { mode: 'timestamp' }).$defaultFn(() => new Date()),
   status: text("status").notNull().default("new"), // new, contacted, in_progress, completed
 });
 
 // Services table for dynamic service management
-export const services = pgTable("services", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const services = sqliteTable("services", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   shortDescription: text("short_description").notNull(),
@@ -31,32 +31,32 @@ export const services = pgTable("services", {
   basePrice: integer("base_price").notNull(),
   duration: text("duration").notNull(),
   rating: text("rating").default("4.8"),
-  features: text("features").array().notNull(),
-  calculatorParams: json("calculator_params"),
+  features: text("features").notNull(), // JSON string for SQLite
+  calculatorParams: text("calculator_params"), // JSON string for SQLite
   isActive: text("is_active").notNull().default("true"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: integer("created_at", { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
 // Portfolio table for case studies
-export const portfolio = pgTable("portfolio", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const portfolio = sqliteTable("portfolio", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   title: text("title").notNull(),
   description: text("description").notNull(),
   category: text("category").notNull(),
-  technologies: text("technologies").array().notNull(),
+  technologies: text("technologies").notNull(), // JSON string for SQLite
   problemStatement: text("problem_statement"),
   solution: text("solution"),
-  results: json("results"), // Array of {metric, value, icon}
-  images: text("images").array(),
+  results: text("results"), // JSON string for SQLite
+  images: text("images"), // JSON string for SQLite
   duration: text("duration"),
   clientName: text("client_name"),
   isPublic: text("is_public").notNull().default("true"),
-  createdAt: timestamp("created_at").defaultNow(),
+  createdAt: integer("created_at", { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
 // News/Blog articles
-export const articles = pgTable("articles", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+export const articles = sqliteTable("articles", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
   title: text("title").notNull(),
   slug: text("slug").notNull().unique(),
   excerpt: text("excerpt").notNull(),
@@ -65,11 +65,11 @@ export const articles = pgTable("articles", {
   author: text("author").notNull().default("SAYD.X Team"),
   readTime: text("read_time"),
   views: integer("views").default(0),
-  tags: text("tags").array(),
+  tags: text("tags"), // JSON string for SQLite
   imageUrl: text("image_url"),
   isPublished: text("is_published").notNull().default("true"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow(),
+  createdAt: integer("created_at", { mode: 'timestamp' }).$defaultFn(() => new Date()),
+  updatedAt: integer("updated_at", { mode: 'timestamp' }).$defaultFn(() => new Date()),
 });
 
 // Zod schemas
