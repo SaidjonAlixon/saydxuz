@@ -2,8 +2,9 @@ import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import * as schema from '@shared/schema';
 
-// SQLite database faylini yaratamiz
-const sqlite = new Database('database.sqlite');
+// SQLite database faylini yaratamiz - Vercel uchun /tmp/ ishlatamiz
+const dbPath = process.env.NODE_ENV === 'production' ? '/tmp/database.sqlite' : 'database.sqlite';
+const sqlite = new Database(dbPath);
 
 // Drizzle ORM'ni SQLite bilan ishlatamiz
 export const db = drizzle(sqlite, { schema });
