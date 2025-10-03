@@ -11,7 +11,7 @@ import { randomUUID } from "crypto";
 
 // File upload configuration
 const upload = multer({
-  dest: 'uploads/',
+  dest: '/tmp/uploads/', // Vercel uchun /tmp/ papkasini ishlatamiz
   limits: {
     fileSize: 15 * 1024 * 1024, // 15MB limit
   },
@@ -32,7 +32,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const leadData = {
         ...req.body,
-        fileUrl: req.file ? `/uploads/${req.file.filename}` : null
+        fileUrl: req.file ? `/tmp/uploads/${req.file.filename}` : null
       };
       
       const validatedData = insertLeadSchema.parse(leadData);

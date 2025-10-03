@@ -67,7 +67,7 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
     // Agar fayl mavjud bo'lsa, faylni alohida yuboramiz
     if (leadData.fileUrl) {
       const filePath = leadData.fileUrl.startsWith('/') ? leadData.fileUrl.substring(1) : leadData.fileUrl;
-      const fullFilePath = `./${filePath}`;
+      const fullFilePath = leadData.fileUrl.startsWith('/tmp/') ? leadData.fileUrl : `./${filePath}`;
       
       try {
         // Fayl turini aniqlaymiz
