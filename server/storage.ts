@@ -9,8 +9,8 @@ import {
   type InsertArticle 
 } from "@shared/schema";
 import { randomUUID } from "crypto";
-import { SQLiteStorage } from "./sqliteStorage";
-import { initializeDatabase } from "./database";
+// import { SQLiteStorage } from "./sqliteStorage";
+// import { initializeDatabase } from "./database";
 
 export interface IStorage {
   // Lead management
