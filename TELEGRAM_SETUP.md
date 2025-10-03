@@ -53,3 +53,4 @@ Agar xabar yuborilmasa:
 - Bot kanalda admin ekanligini tekshiring
 - Console'da xatolik xabarlarini ko'ring
 
+
