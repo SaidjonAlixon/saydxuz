@@ -332,20 +332,26 @@ export class MemStorage implements IStorage {
 // Vercel'da SQLite muammosi bo'lsa, MemStorage ishlatamiz
 let storage: IStorage;
 
-try {
-  // SQLite'ni sinab ko'ramiz
-  const sqliteStorage = new SQLiteStorage();
-  const dbInitialized = initializeDatabase();
-  
-  if (dbInitialized) {
-    console.log('Using SQLite storage');
-    storage = sqliteStorage;
-  } else {
-    throw new Error('SQLite initialization failed');
-  }
-} catch (error) {
-  console.log('SQLite failed, using MemStorage:', error.message);
+// Vercel'da SQLite ishlamaydi, shuning uchun MemStorage ishlatamiz
+if (process.env.NODE_ENV === 'production' && process.env.VERCEL) {
+  console.log('Vercel detected, using MemStorage');
   storage = new MemStorage();
+} else {
+  try {
+    // Local'da SQLite'ni sinab ko'ramiz
+    const sqliteStorage = new SQLiteStorage();
+    const dbInitialized = initializeDatabase();
+    
+    if (dbInitialized) {
+      console.log('Using SQLite storage');
+      storage = sqliteStorage;
+    } else {
+      throw new Error('SQLite initialization failed');
+    }
+  } catch (error) {
+    console.log('SQLite failed, using MemStorage:', error.message);
+    storage = new MemStorage();
+  }
 }
 
 export { storage };
