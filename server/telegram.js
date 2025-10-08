@@ -11,6 +11,8 @@ export async function sendLeadToTelegram(leadData) {
   
   console.log('Bot token:', BOT_TOKEN ? 'mavjud' : 'yo\'q');
   console.log('Kanal ID:', CHANNEL_ID ? 'mavjud' : 'yo\'q');
+  console.log('Bot token qiymati:', BOT_TOKEN);
+  console.log('Kanal ID qiymati:', CHANNEL_ID);
   
   if (!BOT_TOKEN || !CHANNEL_ID) {
     console.log('Telegram bot sozlanmagan yoki kanal ID topilmadi');
@@ -22,6 +24,7 @@ export async function sendLeadToTelegram(leadData) {
   // Har safar yangi bot instance yaratamiz (Vercel serverless uchun)
   const bot = new TelegramBot(BOT_TOKEN, { polling: false });
   console.log('Telegram bot ishga tushirildi');
+  console.log('Bot instance yaratildi:', !!bot);
 
   try {
     // Ariza ma'lumotlarini formatlaymiz
@@ -42,12 +45,17 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
     `.trim();
 
     // Avval ariza matnini yuboramiz
+    console.log('Xabar yuborishga harakat qilinmoqda...');
+    console.log('Xabar matni:', message);
+    console.log('Kanal ID:', CHANNEL_ID);
+    
     const arizaResult = await bot.sendMessage(CHANNEL_ID, message, {
       parse_mode: 'Markdown',
       disable_web_page_preview: true
     });
 
     console.log('Ariza matni yuborildi:', arizaResult.message_id);
+    console.log('Xabar natijasi:', arizaResult);
 
     // Agar fayl mavjud bo'lsa, faylni alohida yuboramiz
     console.log('Fayl tekshiruvi:', {
@@ -235,9 +243,15 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
 
   } catch (error) {
     console.error('Telegram xabar yuborishda xatolik:', error);
+    console.error('Xatolik tafsilotlari:', {
+      message: error.message,
+      code: error.code,
+      response: error.response
+    });
     return { 
       success: false, 
-      message: 'Telegram xabar yuborishda xatolik: ' + error.message 
+      message: 'Telegram xabar yuborishda xatolik: ' + error.message,
+      error: error
     };
   }
 }

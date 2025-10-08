@@ -108,6 +108,8 @@ export default async function handler(req, res) {
       console.log('Telegram yuborishga harakat qilinmoqda...');
       console.log('Bot token mavjudmi:', !!process.env.TELEGRAM_BOT_TOKEN);
       console.log('Kanal ID mavjudmi:', !!process.env.TELEGRAM_CHANNEL_ID);
+      console.log('Bot token:', process.env.TELEGRAM_BOT_TOKEN ? 'mavjud' : 'yo\'q');
+      console.log('Kanal ID:', process.env.TELEGRAM_CHANNEL_ID ? 'mavjud' : 'yo\'q');
       
       const telegramResult = await sendLeadToTelegram(lead);
       console.log('Telegram yuborish natijasi:', telegramResult);
