@@ -18,6 +18,7 @@ interface FormData {
   timeline: string;
   description: string;
   file: File | null;
+  fileUrl: string | null;
 }
 
 interface QuickLeadFormProps {
@@ -61,7 +62,8 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
     budget: "",
     timeline: "",
     description: "",
-    file: null
+    file: null,
+    fileUrl: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
@@ -98,7 +100,7 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
     setFieldErrors(prev => ({ ...prev, [fieldName]: error }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 15 * 1024 * 1024) { // 15MB limit
@@ -109,12 +111,67 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
         });
         return;
       }
-      setFormData(prev => ({ ...prev, file }));
+
+      try {
+        // Faylni base64 formatiga o'tkazamiz
+        const reader = new FileReader();
+        reader.onload = async (event) => {
+          const base64String = event.target?.result as string;
+          const base64Data = base64String.split(',')[1]; // data:type;base64, qismini olib tashlaymiz
+          
+          try {
+            // Faylni serverga yuboramiz
+            const uploadResponse = await fetch('/api/upload', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                file: base64Data,
+                fileName: file.name,
+                fileType: file.type
+              })
+            });
+
+            const uploadResult = await uploadResponse.json();
+            
+            if (uploadResult.success) {
+              setFormData(prev => ({ 
+                ...prev, 
+                file,
+                fileUrl: uploadResult.fileUrl 
+              }));
+              toast({
+                title: "Fayl yuklandi",
+                description: `${file.name} muvaffaqiyatli yuklandi`,
+              });
+            } else {
+              throw new Error(uploadResult.message);
+            }
+          } catch (uploadError) {
+            console.error('Fayl yuklashda xatolik:', uploadError);
+            toast({
+              title: "Fayl yuklashda xatolik",
+              description: "Faylni yuklashda muammo yuz berdi",
+              variant: "destructive"
+            });
+          }
+        };
+        
+        reader.readAsDataURL(file);
+      } catch (error) {
+        console.error('Fayl o\'qishda xatolik:', error);
+        toast({
+          title: "Xatolik",
+          description: "Faylni o'qishda muammo yuz berdi",
+          variant: "destructive"
+        });
+      }
     }
   };
 
   const removeFile = () => {
-    setFormData(prev => ({ ...prev, file: null }));
+    setFormData(prev => ({ ...prev, file: null, fileUrl: null }));
   };
 
   const validateField = (fieldName: string, value: string): string => {
@@ -192,6 +249,7 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
         budget: formData.budget || null,
         timeline: formData.timeline || null,
         description: formData.description || null,
+        fileUrl: formData.fileUrl || null,
         source: "website"
       };
       
@@ -225,7 +283,8 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
           budget: "",
           timeline: "",
           description: "",
-          file: null
+          file: null,
+          fileUrl: null
         });
       } else {
         toast({

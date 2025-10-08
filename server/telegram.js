@@ -51,70 +51,142 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
 
     // Agar fayl mavjud bo'lsa, faylni alohida yuboramiz
     if (leadData.fileUrl) {
-      const filePath = leadData.fileUrl.startsWith('/') ? leadData.fileUrl.substring(1) : leadData.fileUrl;
-      const fullFilePath = leadData.fileUrl.startsWith('/tmp/') ? leadData.fileUrl : `./${filePath}`;
-      
       try {
-        // Fayl turini aniqlaymiz
-        const fileExtension = filePath.split('.').pop().toLowerCase();
-        let fileType = 'document';
-        let fileIcon = '📄';
-        
-        if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-          fileType = 'photo';
-          fileIcon = '🖼️';
-        } else if (['mp4', 'avi', 'mov'].includes(fileExtension)) {
-          fileType = 'video';
-          fileIcon = '🎥';
-        } else if (['mp3', 'wav', 'ogg'].includes(fileExtension)) {
-          fileType = 'audio';
-          fileIcon = '🎵';
-        } else if (['pdf'].includes(fileExtension)) {
-          fileType = 'document';
-          fileIcon = '📕';
-        } else if (['doc', 'docx'].includes(fileExtension)) {
-          fileType = 'document';
-          fileIcon = '📘';
-        } else if (['xls', 'xlsx'].includes(fileExtension)) {
-          fileType = 'document';
-          fileIcon = '📊';
-        } else if (['ppt', 'pptx'].includes(fileExtension)) {
-          fileType = 'document';
-          fileIcon = '📋';
-        } else if (['zip', 'rar', '7z'].includes(fileExtension)) {
-          fileType = 'document';
-          fileIcon = '🗜️';
-        }
+        // Base64 fayl uchun
+        if (leadData.fileUrl.startsWith('data:')) {
+          const [header, base64Data] = leadData.fileUrl.split(',');
+          const mimeType = header.match(/data:([^;]+)/)?.[1] || 'application/octet-stream';
+          const fileExtension = mimeType.split('/')[1] || 'bin';
+          
+          // Fayl turini aniqlaymiz
+          let fileType = 'document';
+          let fileIcon = '📄';
+          
+          if (mimeType.startsWith('image/')) {
+            fileType = 'photo';
+            fileIcon = '🖼️';
+          } else if (mimeType.startsWith('video/')) {
+            fileType = 'video';
+            fileIcon = '🎥';
+          } else if (mimeType.startsWith('audio/')) {
+            fileType = 'audio';
+            fileIcon = '🎵';
+          } else if (mimeType === 'application/pdf') {
+            fileType = 'document';
+            fileIcon = '📕';
+          } else if (mimeType.includes('word') || mimeType.includes('document')) {
+            fileType = 'document';
+            fileIcon = '📘';
+          } else if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) {
+            fileType = 'document';
+            fileIcon = '📊';
+          } else if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) {
+            fileType = 'document';
+            fileIcon = '📋';
+          } else if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('7z')) {
+            fileType = 'document';
+            fileIcon = '🗜️';
+          }
 
-        const fileName = filePath.split('/').pop();
-        const fileCaption = `${fileIcon} **Qo'shimcha fayl:** ${fileName}`;
+          // Fayl nomini olamiz (agar mavjud bo'lsa)
+          const fileName = leadData.fileName || `fayl.${fileExtension}`;
+          const fileCaption = `${fileIcon} **Qo'shimcha fayl:** ${fileName}`;
 
-        // Faylni alohida yuboramiz
-        let fileResult;
-        if (fileType === 'photo') {
-          fileResult = await bot.sendPhoto(CHANNEL_ID, fullFilePath, {
-            caption: fileCaption,
-            parse_mode: 'Markdown'
-          });
-        } else if (fileType === 'video') {
-          fileResult = await bot.sendVideo(CHANNEL_ID, fullFilePath, {
-            caption: fileCaption,
-            parse_mode: 'Markdown'
-          });
-        } else if (fileType === 'audio') {
-          fileResult = await bot.sendAudio(CHANNEL_ID, fullFilePath, {
-            caption: fileCaption,
-            parse_mode: 'Markdown'
-          });
+          // Base64 faylni Buffer'ga o'tkazamiz
+          const fileBuffer = Buffer.from(base64Data, 'base64');
+
+          // Faylni alohida yuboramiz
+          let fileResult;
+          if (fileType === 'photo') {
+            fileResult = await bot.sendPhoto(CHANNEL_ID, fileBuffer, {
+              caption: fileCaption,
+              parse_mode: 'Markdown'
+            });
+          } else if (fileType === 'video') {
+            fileResult = await bot.sendVideo(CHANNEL_ID, fileBuffer, {
+              caption: fileCaption,
+              parse_mode: 'Markdown'
+            });
+          } else if (fileType === 'audio') {
+            fileResult = await bot.sendAudio(CHANNEL_ID, fileBuffer, {
+              caption: fileCaption,
+              parse_mode: 'Markdown'
+            });
+          } else {
+            // Barcha boshqa fayllar uchun document sifatida yuboramiz
+            fileResult = await bot.sendDocument(CHANNEL_ID, fileBuffer, {
+              caption: fileCaption,
+              parse_mode: 'Markdown',
+              filename: fileName
+            });
+          }
+
+          console.log('Fayl yuborildi:', fileResult.message_id);
         } else {
-          // Barcha boshqa fayllar uchun document sifatida yuboramiz
-          fileResult = await bot.sendDocument(CHANNEL_ID, fullFilePath, {
-            caption: fileCaption,
-            parse_mode: 'Markdown'
-          });
-        }
+          // Oddiy fayl URL uchun (eski usul)
+          const filePath = leadData.fileUrl.startsWith('/') ? leadData.fileUrl.substring(1) : leadData.fileUrl;
+          const fullFilePath = leadData.fileUrl.startsWith('/tmp/') ? leadData.fileUrl : `./${filePath}`;
+          
+          const fileExtension = filePath.split('.').pop().toLowerCase();
+          let fileType = 'document';
+          let fileIcon = '📄';
+          
+          if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+            fileType = 'photo';
+            fileIcon = '🖼️';
+          } else if (['mp4', 'avi', 'mov'].includes(fileExtension)) {
+            fileType = 'video';
+            fileIcon = '🎥';
+          } else if (['mp3', 'wav', 'ogg'].includes(fileExtension)) {
+            fileType = 'audio';
+            fileIcon = '🎵';
+          } else if (['pdf'].includes(fileExtension)) {
+            fileType = 'document';
+            fileIcon = '📕';
+          } else if (['doc', 'docx'].includes(fileExtension)) {
+            fileType = 'document';
+            fileIcon = '📘';
+          } else if (['xls', 'xlsx'].includes(fileExtension)) {
+            fileType = 'document';
+            fileIcon = '📊';
+          } else if (['ppt', 'pptx'].includes(fileExtension)) {
+            fileType = 'document';
+            fileIcon = '📋';
+          } else if (['zip', 'rar', '7z'].includes(fileExtension)) {
+            fileType = 'document';
+            fileIcon = '🗜️';
+          }
 
-        console.log('Fayl yuborildi:', fileResult.message_id);
+          const fileName = filePath.split('/').pop();
+          const fileCaption = `${fileIcon} **Qo'shimcha fayl:** ${fileName}`;
+
+          // Faylni alohida yuboramiz
+          let fileResult;
+          if (fileType === 'photo') {
+            fileResult = await bot.sendPhoto(CHANNEL_ID, fullFilePath, {
+              caption: fileCaption,
+              parse_mode: 'Markdown'
+            });
+          } else if (fileType === 'video') {
+            fileResult = await bot.sendVideo(CHANNEL_ID, fullFilePath, {
+              caption: fileCaption,
+              parse_mode: 'Markdown'
+            });
+          } else if (fileType === 'audio') {
+            fileResult = await bot.sendAudio(CHANNEL_ID, fullFilePath, {
+              caption: fileCaption,
+              parse_mode: 'Markdown'
+            });
+          } else {
+            // Barcha boshqa fayllar uchun document sifatida yuboramiz
+            fileResult = await bot.sendDocument(CHANNEL_ID, fullFilePath, {
+              caption: fileCaption,
+              parse_mode: 'Markdown'
+            });
+          }
+
+          console.log('Fayl yuborildi:', fileResult.message_id);
+        }
       } catch (fileError) {
         console.log('Fayl yuborishda xatolik:', fileError.message);
       }

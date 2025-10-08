@@ -66,7 +66,7 @@ export default async function handler(req, res) {
         budget: req.body.budget || null,
         timeline: req.body.timeline || null,
         description: req.body.description || null,
-        fileUrl: null, // Vercel'da file upload hozircha yo'q
+        fileUrl: req.body.fileUrl || null, // Fayl URL'ini olamiz
         source: req.body.source || "website"
       };
       
