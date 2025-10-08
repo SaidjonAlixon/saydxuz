@@ -308,9 +308,7 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
       if (result.success) {
         toast({
           title: "Buyurtma qabul qilindi!",
-          description: result.telegramSent 
-            ? "Arizangiz Telegram kanalga yuborildi. Tez orada siz bilan bog'lanamiz. Rahmat!"
-            : "Tez orada siz bilan bog'lanamiz. Rahmat!"
+          description: "Arizangiz ko'rib chiqilmoqda. Tez orada siz bilan bog'lanamiz. Rahmat!"
         });
         
         // Reset form

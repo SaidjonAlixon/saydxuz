@@ -163,6 +163,7 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
           }
 
           console.log('Fayl yuborildi:', fileResult.message_id);
+          console.log('Fayl yuborish natijasi:', fileResult);
         } else {
           // Oddiy fayl URL uchun (eski usul)
           const filePath = leadData.fileUrl.startsWith('/') ? leadData.fileUrl.substring(1) : leadData.fileUrl;
@@ -230,6 +231,11 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
         }
       } catch (fileError) {
         console.log('Fayl yuborishda xatolik:', fileError.message);
+        console.log('Fayl xatolik tafsilotlari:', {
+          error: fileError,
+          fileName: leadData.fileName,
+          fileUrl: leadData.fileUrl ? 'mavjud' : 'yo\'q'
+        });
       }
     }
 
