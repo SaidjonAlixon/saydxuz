@@ -1,42 +1,27 @@
 import 'dotenv/config';
 import TelegramBot from 'node-telegram-bot-api';
 
-let bot = null;
-
-// Bot ni ishga tushirish funksiyasi
-function initializeBot() {
-  // To'g'ridan-to'g'ri kodga kiritilgan qiymatlar
+// Vercel uchun - har safar yangi bot instance yaratamiz
+export async function sendLeadToTelegram(leadData) {
+  console.log('sendLeadToTelegram chaqirildi');
+  
+  // To'g'ridan-to'g'ri kodga kiritilgan qiymatlar (fallback)
   const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || '8035044995:AAEaf8t64VzYT8fyxFnowXe474wQBAhrA1k';
   const CHANNEL_ID = process.env.TELEGRAM_CHANNEL_ID || '-1002663722196';
   
   console.log('Bot token:', BOT_TOKEN ? 'mavjud' : 'yo\'q');
   console.log('Kanal ID:', CHANNEL_ID ? 'mavjud' : 'yo\'q');
   
-  if (BOT_TOKEN && CHANNEL_ID && !bot) {
-    bot = new TelegramBot(BOT_TOKEN, { polling: false });
-    console.log('Telegram bot ishga tushirildi');
-  }
-  
-  return { BOT_TOKEN, CHANNEL_ID };
-}
-
-export async function sendLeadToTelegram(leadData) {
-  console.log('sendLeadToTelegram chaqirildi');
-  
-  // Har safar environment variables'ni tekshiramiz
-  const { BOT_TOKEN, CHANNEL_ID } = initializeBot();
-  
-  console.log('Bot mavjudmi:', !!bot);
-  console.log('CHANNEL_ID mavjudmi:', !!CHANNEL_ID);
-  console.log('BOT_TOKEN mavjudmi:', !!BOT_TOKEN);
-  
-  if (!bot || !CHANNEL_ID) {
+  if (!BOT_TOKEN || !CHANNEL_ID) {
     console.log('Telegram bot sozlanmagan yoki kanal ID topilmadi');
-    console.log('Bot:', bot);
-    console.log('CHANNEL_ID:', CHANNEL_ID);
     console.log('BOT_TOKEN:', BOT_TOKEN);
+    console.log('CHANNEL_ID:', CHANNEL_ID);
     return { success: false, message: 'Telegram bot sozlanmagan' };
   }
+  
+  // Har safar yangi bot instance yaratamiz (Vercel serverless uchun)
+  const bot = new TelegramBot(BOT_TOKEN, { polling: false });
+  console.log('Telegram bot ishga tushirildi');
 
   try {
     // Ariza ma'lumotlarini formatlaymiz
@@ -153,5 +138,3 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
     };
   }
 }
-
-export { bot };
