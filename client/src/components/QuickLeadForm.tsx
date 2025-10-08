@@ -142,10 +142,7 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
                 file,
                 fileUrl: uploadResult.fileUrl 
               }));
-              toast({
-                title: "Fayl yuklandi",
-                description: `${file.name} muvaffaqiyatli yuklandi va Telegram'ga yuboriladi`,
-              });
+              // Toast xabari olib tashlandi - fayl yuklanganda xabar chiqmasin
               
               // Debug uchun
               console.log('Fayl yuklandi va formData yangilandi:', {
