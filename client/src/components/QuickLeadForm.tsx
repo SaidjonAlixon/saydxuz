@@ -108,6 +108,37 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
     e.preventDefault();
     setIsSubmitting(true);
 
+    // Majburiy maydonlarni tekshiramiz
+    if (!formData.name.trim()) {
+      toast({
+        title: "Xatolik!",
+        description: "Ism maydonini to'ldiring",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.phone.trim()) {
+      toast({
+        title: "Xatolik!",
+        description: "Telefon raqamini to'ldiring",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!formData.service.trim()) {
+      toast({
+        title: "Xatolik!",
+        description: "Xizmat turini tanlang",
+        variant: "destructive"
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const formDataToSubmit = new FormData();
       formDataToSubmit.append('name', formData.name);

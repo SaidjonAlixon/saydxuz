@@ -19,9 +19,16 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       console.log('Kelgan ma\'lumotlar:', req.body);
+      console.log('Body type:', typeof req.body);
+      console.log('Body keys:', Object.keys(req.body || {}));
       
       // Required field'larni tekshiramiz
       if (!req.body.name || !req.body.phone || !req.body.serviceType) {
+        console.log('Missing required fields:', {
+          name: req.body.name,
+          phone: req.body.phone,
+          serviceType: req.body.serviceType
+        });
         return res.status(400).json({
           success: false,
           message: "Ism, telefon va xizmat turi majburiy maydonlar"
@@ -43,7 +50,18 @@ export default async function handler(req, res) {
       
       console.log('Lead data prepared:', leadData);
       
-      const validatedData = insertLeadSchema.parse(leadData);
+      let validatedData;
+      try {
+        validatedData = insertLeadSchema.parse(leadData);
+        console.log('Validated data:', validatedData);
+      } catch (validationError) {
+        console.log('Validation error:', validationError.errors);
+        return res.status(400).json({
+          success: false,
+          message: "Ma'lumotlarda xatolik bor",
+          errors: validationError.errors
+        });
+      }
       
       // Vercel'da database muammosi bo'lsa ham Telegram'ga yuborish
       let lead;
