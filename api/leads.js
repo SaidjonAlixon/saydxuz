@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { storage } from '../server/storage.js';
-import { insertLeadSchema } from '@shared/schema.js';
+import { insertLeadSchema } from '../shared/schema.js';
 import { sendLeadToTelegram } from '../server/telegram.js';
 import { randomUUID } from 'crypto';
 
