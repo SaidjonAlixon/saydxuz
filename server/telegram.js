@@ -111,35 +111,44 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
             fileExtension,
             mimeType,
             fileType,
-            fileIcon
+            fileIcon,
+            originalFileName: leadData.fileName
           });
 
           // Base64 faylni Buffer'ga o'tkazamiz
           const fileBuffer = Buffer.from(base64Data, 'base64');
+          
+          // Fayl nomini to'g'ri belgilash uchun
+          const fileStream = {
+            value: fileBuffer,
+            options: {
+              filename: fileName,
+              contentType: mimeType
+            }
+          };
 
           // Faylni alohida yuboramiz
           let fileResult;
           if (fileType === 'photo') {
-            fileResult = await bot.sendPhoto(CHANNEL_ID, fileBuffer, {
+            fileResult = await bot.sendPhoto(CHANNEL_ID, fileStream, {
               caption: fileCaption,
               parse_mode: 'Markdown'
             });
           } else if (fileType === 'video') {
-            fileResult = await bot.sendVideo(CHANNEL_ID, fileBuffer, {
+            fileResult = await bot.sendVideo(CHANNEL_ID, fileStream, {
               caption: fileCaption,
               parse_mode: 'Markdown'
             });
           } else if (fileType === 'audio') {
-            fileResult = await bot.sendAudio(CHANNEL_ID, fileBuffer, {
+            fileResult = await bot.sendAudio(CHANNEL_ID, fileStream, {
               caption: fileCaption,
               parse_mode: 'Markdown'
             });
           } else {
             // Barcha boshqa fayllar uchun document sifatida yuboramiz
-            fileResult = await bot.sendDocument(CHANNEL_ID, fileBuffer, {
+            fileResult = await bot.sendDocument(CHANNEL_ID, fileStream, {
               caption: fileCaption,
-              parse_mode: 'Markdown',
-              filename: fileName
+              parse_mode: 'Markdown'
             });
           }
 
