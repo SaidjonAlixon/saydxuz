@@ -64,6 +64,7 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
     file: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
 
   useEffect(() => {
     if (defaultService) {
@@ -83,6 +84,18 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
     setFormData(prev => ({ ...prev, phone: formatted }));
+    
+    // Real-time validatsiya
+    const error = validateField('phone', formatted);
+    setFieldErrors(prev => ({ ...prev, phone: error }));
+  };
+
+  const handleFieldChange = (fieldName: string, value: string) => {
+    setFormData(prev => ({ ...prev, [fieldName]: value }));
+    
+    // Real-time validatsiya
+    const error = validateField(fieldName, value);
+    setFieldErrors(prev => ({ ...prev, [fieldName]: error }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,37 +117,67 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
     setFormData(prev => ({ ...prev, file: null }));
   };
 
+  const validateField = (fieldName: string, value: string): string => {
+    switch (fieldName) {
+      case 'name':
+        if (!value.trim()) return "Ism maydonini to'ldiring";
+        if (value.trim().length < 2) return "Ism kamida 2 ta harf bo'lishi kerak";
+        return "";
+      case 'phone':
+        if (!value.trim()) return "Telefon raqamini to'ldiring";
+        const phoneRegex = /^\+998\s?\d{2}\s?\d{3}\s?\d{2}\s?\d{2}$/;
+        if (!phoneRegex.test(value.replace(/\s/g, ''))) return "To'g'ri telefon raqam kiriting (+998 90 123 45 67)";
+        return "";
+      case 'service':
+        if (!value.trim()) return "Xizmat turini tanlang";
+        return "";
+      case 'telegram':
+        if (value.trim() && !value.startsWith('@')) return "Telegram username @ bilan boshlanishi kerak";
+        return "";
+      default:
+        return "";
+    }
+  };
+
+  const validateForm = (): boolean => {
+    const errors: {[key: string]: string} = {};
+    let isValid = true;
+
+    // Majburiy maydonlarni tekshiramiz
+    const nameError = validateField('name', formData.name);
+    if (nameError) {
+      errors.name = nameError;
+      isValid = false;
+    }
+
+    const phoneError = validateField('phone', formData.phone);
+    if (phoneError) {
+      errors.phone = phoneError;
+      isValid = false;
+    }
+
+    const serviceError = validateField('service', formData.service);
+    if (serviceError) {
+      errors.service = serviceError;
+      isValid = false;
+    }
+
+    const telegramError = validateField('telegram', formData.telegram);
+    if (telegramError) {
+      errors.telegram = telegramError;
+      isValid = false;
+    }
+
+    setFieldErrors(errors);
+    return isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Majburiy maydonlarni tekshiramiz
-    if (!formData.name.trim()) {
-      toast({
-        title: "Xatolik!",
-        description: "Ism maydonini to'ldiring",
-        variant: "destructive"
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.phone.trim()) {
-      toast({
-        title: "Xatolik!",
-        description: "Telefon raqamini to'ldiring",
-        variant: "destructive"
-      });
-      setIsSubmitting(false);
-      return;
-    }
-
-    if (!formData.service.trim()) {
-      toast({
-        title: "Xatolik!",
-        description: "Xizmat turini tanlang",
-        variant: "destructive"
-      });
+    // Form validatsiyasini tekshiramiz
+    if (!validateForm()) {
       setIsSubmitting(false);
       return;
     }
@@ -221,11 +264,18 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+              onChange={(e) => handleFieldChange('name', e.target.value)}
               placeholder="Ismingizni kiriting"
               data-testid="input-name"
+              className={fieldErrors.name ? "border-red-500 focus:border-red-500" : ""}
               required
             />
+            {fieldErrors.name && (
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <span className="text-red-500">⚠</span>
+                {fieldErrors.name}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -237,8 +287,15 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
               onChange={handlePhoneChange}
               placeholder="+998 90 123 45 67"
               data-testid="input-phone"
+              className={fieldErrors.phone ? "border-red-500 focus:border-red-500" : ""}
               required
             />
+            {fieldErrors.phone && (
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <span className="text-red-500">⚠</span>
+                {fieldErrors.phone}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -246,19 +303,29 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
             <Input
               id="telegram"
               value={formData.telegram}
-              onChange={(e) => setFormData(prev => ({ ...prev, telegram: e.target.value }))}
+              onChange={(e) => handleFieldChange('telegram', e.target.value)}
               placeholder="@username"
               data-testid="input-telegram"
+              className={fieldErrors.telegram ? "border-red-500 focus:border-red-500" : ""}
             />
+            {fieldErrors.telegram && (
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <span className="text-red-500">⚠</span>
+                {fieldErrors.telegram}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="service">Xizmat turi *</Label>
             <Select 
               value={formData.service} 
-              onValueChange={(value) => setFormData(prev => ({ ...prev, service: value }))}
+              onValueChange={(value) => handleFieldChange('service', value)}
             >
-              <SelectTrigger data-testid="select-service">
+              <SelectTrigger 
+                data-testid="select-service"
+                className={fieldErrors.service ? "border-red-500 focus:border-red-500" : ""}
+              >
                 <SelectValue placeholder="Xizmatni tanlang" />
               </SelectTrigger>
               <SelectContent>
@@ -269,6 +336,12 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
                 ))}
               </SelectContent>
             </Select>
+            {fieldErrors.service && (
+              <p className="text-sm text-red-500 flex items-center gap-1">
+                <span className="text-red-500">⚠</span>
+                {fieldErrors.service}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
