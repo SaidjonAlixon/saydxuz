@@ -112,9 +112,16 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
             fileIcon = '📄';
           }
 
-          // Fayl nomini to'g'ri olamiz
+          // Fayl nomini to'g'ri olamiz - asl fayl nomini ishlatamiz
           const fileName = originalFileName || `fayl.${fileExtension}`;
           const fileCaption = `${fileIcon} **Qo'shimcha fayl:** ${fileName}`;
+          
+          console.log('Fayl nomi tekshiruvi:', {
+            originalFileName,
+            fileName,
+            fileExtension,
+            finalFileName: fileName
+          });
           
           console.log('Fayl ma\'lumotlari:', {
             fileName,
@@ -157,11 +164,20 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
             });
           } else {
             // Barcha boshqa fayllar uchun document sifatida yuboramiz
-            fileResult = await bot.sendDocument(CHANNEL_ID, fileStream, {
+            // Telegram'da fayl nomini to'g'ri belgilash uchun
+            const documentOptions = {
               caption: fileCaption,
-              parse_mode: 'Markdown',
-              filename: fileName
-            });
+              parse_mode: 'Markdown'
+            };
+            
+            // Fayl nomini to'g'ri belgilash
+            if (fileName && !fileName.includes('fayl.')) {
+              documentOptions.filename = fileName;
+            }
+            
+            console.log('Document yuborish parametrlari:', documentOptions);
+            
+            fileResult = await bot.sendDocument(CHANNEL_ID, fileStream, documentOptions);
           }
 
           console.log('Fayl yuborildi:', fileResult.message_id);
