@@ -158,6 +158,12 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
             }
           } catch (uploadError) {
             console.error('Fayl yuklashda xatolik:', uploadError);
+            console.error('Upload error details:', {
+              error: uploadError,
+              fileName: file.name,
+              fileSize: file.size,
+              fileType: file.type
+            });
             toast({
               title: "Fayl yuklashda xatolik",
               description: "Faylni yuklashda muammo yuz berdi",
@@ -267,6 +273,9 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
       console.log('Fayl mavjudmi:', !!requestData.fileUrl);
       console.log('Fayl URL:', requestData.fileUrl);
       
+      console.log('Form yuborish jarayoni boshlanmoqda...');
+      console.log('Request data:', requestData);
+      
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
@@ -275,7 +284,11 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
         body: JSON.stringify(requestData)
       });
       
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+      
       const result = await response.json();
+      console.log('Response result:', result);
       
       if (result.success) {
         toast({

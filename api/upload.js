@@ -53,6 +53,11 @@ export default async function handler(req, res) {
       const fileUrl = `data:${fileType || 'application/octet-stream'};base64,${file}`;
       
       console.log('Fayl muvaffaqiyatli yuklandi:', fileName);
+      console.log('Upload result:', {
+        fileName: originalName || fileName,
+        fileSize: fileSizeInMB.toFixed(2) + ' MB',
+        fileUrl: fileUrl.substring(0, 50) + '...'
+      });
       
       res.status(200).json({
         success: true,
