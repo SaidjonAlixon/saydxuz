@@ -1,6 +1,8 @@
 import 'dotenv/config';
 
 export default async function handler(req, res) {
+  console.log('Upload API chaqirildi:', req.method, req.url);
+  
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');

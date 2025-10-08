@@ -311,6 +311,7 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
           fileUrl: null
         });
       } else {
+        console.error('Form yuborishda xatolik:', result);
         toast({
           title: "Xatolik!",
           description: result.message || "Arizani yuborishda xatolik yuz berdi",
@@ -318,10 +319,10 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
         });
       }
     } catch (error) {
-      console.error("Submit error:", error);
+      console.error('Form yuborishda kutilmagan xatolik:', error);
       toast({
         title: "Xatolik!",
-        description: "Tarmoq xatoligi. Iltimos qaytadan urinib ko'ring",
+        description: "Arizani yuborishda kutilmagan xatolik yuz berdi",
         variant: "destructive"
       });
     } finally {

@@ -5,6 +5,8 @@ import { sendLeadToTelegram } from '../server/telegram.js';
 import { randomUUID } from 'crypto';
 
 export default async function handler(req, res) {
+  console.log('Leads API chaqirildi:', req.method, req.url);
+  
   // CORS headers
   res.setHeader('Access-Control-Allow-Credentials', true);
   res.setHeader('Access-Control-Allow-Origin', '*');
