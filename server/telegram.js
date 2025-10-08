@@ -63,40 +63,47 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
         if (leadData.fileUrl.startsWith('data:')) {
           const [header, base64Data] = leadData.fileUrl.split(',');
           const mimeType = header.match(/data:([^;]+)/)?.[1] || 'application/octet-stream';
-          const fileExtension = mimeType.split('/')[1] || 'bin';
           
-          // Fayl turini aniqlaymiz
+          // Fayl nomidan extension olamiz (asosiy)
+          const originalFileName = leadData.fileName || '';
+          const fileExtension = originalFileName.split('.').pop()?.toLowerCase() || mimeType.split('/')[1] || 'bin';
+          
+          // Fayl turini aniqlaymiz (asosiy extension bo'yicha)
           let fileType = 'document';
           let fileIcon = '📄';
           
-          if (mimeType.startsWith('image/')) {
+          // Avval extension bo'yicha tekshiramiz
+          if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(fileExtension)) {
             fileType = 'photo';
             fileIcon = '🖼️';
-          } else if (mimeType.startsWith('video/')) {
+          } else if (['mp4', 'avi', 'mov', 'mkv', 'webm'].includes(fileExtension)) {
             fileType = 'video';
             fileIcon = '🎥';
-          } else if (mimeType.startsWith('audio/')) {
+          } else if (['mp3', 'wav', 'ogg', 'm4a'].includes(fileExtension)) {
             fileType = 'audio';
             fileIcon = '🎵';
-          } else if (mimeType === 'application/pdf') {
+          } else if (fileExtension === 'pdf') {
             fileType = 'document';
             fileIcon = '📕';
-          } else if (mimeType.includes('word') || mimeType.includes('document')) {
+          } else if (['doc', 'docx'].includes(fileExtension)) {
             fileType = 'document';
             fileIcon = '📘';
-          } else if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) {
+          } else if (['xls', 'xlsx'].includes(fileExtension)) {
             fileType = 'document';
             fileIcon = '📊';
-          } else if (mimeType.includes('presentation') || mimeType.includes('powerpoint')) {
+          } else if (['ppt', 'pptx'].includes(fileExtension)) {
             fileType = 'document';
             fileIcon = '📋';
-          } else if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('7z')) {
+          } else if (['zip', 'rar', '7z', 'tar', 'gz'].includes(fileExtension)) {
             fileType = 'document';
             fileIcon = '🗜️';
+          } else if (['txt', 'md'].includes(fileExtension)) {
+            fileType = 'document';
+            fileIcon = '📄';
           }
 
-          // Fayl nomini olamiz (agar mavjud bo'lsa)
-          const fileName = leadData.fileName || `fayl.${fileExtension}`;
+          // Fayl nomini to'g'ri olamiz
+          const fileName = originalFileName || `fayl.${fileExtension}`;
           const fileCaption = `${fileIcon} **Qo'shimcha fayl:** ${fileName}`;
           
           console.log('Fayl ma\'lumotlari:', {

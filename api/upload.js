@@ -28,7 +28,7 @@ export default async function handler(req, res) {
       }
 
       // Fayl ma'lumotlarini olamiz
-      const { file, fileName, fileType } = req.body;
+      const { file, fileName, fileType, originalName } = req.body;
       
       if (!file || !fileName) {
         return res.status(400).json({
@@ -57,7 +57,7 @@ export default async function handler(req, res) {
       res.status(200).json({
         success: true,
         fileUrl: fileUrl,
-        fileName: fileName,
+        fileName: originalName || fileName,
         fileSize: fileSizeInMB.toFixed(2) + ' MB'
       });
 

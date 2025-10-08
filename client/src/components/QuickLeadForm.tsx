@@ -129,7 +129,8 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
               body: JSON.stringify({
                 file: base64Data,
                 fileName: file.name,
-                fileType: file.type
+                fileType: file.type,
+                originalName: file.name
               })
             });
 
