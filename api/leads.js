@@ -35,6 +35,15 @@ export default async function handler(req, res) {
         });
       }
       
+      // Agar req.body bo'sh bo'lsa, FormData parse qilinmagan
+      if (!req.body || Object.keys(req.body).length === 0) {
+        console.log('FormData parse qilinmagan, req.body bo\'sh');
+        return res.status(400).json({
+          success: false,
+          message: "Ma'lumotlar to'g'ri yuborilmagan"
+        });
+      }
+      
       // Required field'larni tekshiramiz
       if (!req.body.name || !req.body.phone || !req.body.serviceType) {
         console.log('Missing required fields:', {

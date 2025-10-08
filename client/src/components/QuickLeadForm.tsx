@@ -140,31 +140,27 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
     }
 
     try {
-      const formDataToSubmit = new FormData();
-      formDataToSubmit.append('name', formData.name);
-      formDataToSubmit.append('phone', formData.phone);
-      formDataToSubmit.append('serviceType', formData.service);
-      
-      // Debug uchun ma'lumotlarni console'ga chiqaramiz
-      console.log('Yuborilayotgan ma\'lumotlar:', {
+      // JSON formatida yuboramiz (FormData o'rniga)
+      const requestData = {
         name: formData.name,
         phone: formData.phone,
         serviceType: formData.service,
-        telegram: formData.telegram,
-        budget: formData.budget,
-        timeline: formData.timeline,
-        description: formData.description
-      });
+        telegram: formData.telegram || null,
+        budget: formData.budget || null,
+        timeline: formData.timeline || null,
+        description: formData.description || null,
+        source: "website"
+      };
       
-      if (formData.telegram) formDataToSubmit.append('telegram', formData.telegram);
-      if (formData.budget) formDataToSubmit.append('budget', formData.budget);
-      if (formData.timeline) formDataToSubmit.append('timeline', formData.timeline);
-      if (formData.description) formDataToSubmit.append('description', formData.description);
-      if (formData.file) formDataToSubmit.append('file', formData.file);
+      // Debug uchun ma'lumotlarni console'ga chiqaramiz
+      console.log('Yuborilayotgan ma\'lumotlar:', requestData);
       
       const response = await fetch('/api/leads', {
         method: 'POST',
-        body: formDataToSubmit
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData)
       });
       
       const result = await response.json();
