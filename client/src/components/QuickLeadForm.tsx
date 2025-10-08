@@ -148,7 +148,17 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
               console.log('Fayl yuklandi va formData yangilandi:', {
                 fileName: file.name,
                 fileUrl: uploadResult.fileUrl,
-                fileType: file.type
+                fileType: file.type,
+                formDataUpdated: true
+              });
+              
+              // FormData yangilanganini tekshiramiz
+              console.log('Yangilangan formData:', {
+                name: formData.name,
+                phone: formData.phone,
+                service: formData.service,
+                file: file.name,
+                fileUrl: uploadResult.fileUrl
               });
             } else {
               throw new Error(uploadResult.message);
@@ -269,6 +279,14 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
       console.log('Yuborilayotgan ma\'lumotlar:', requestData);
       console.log('Fayl mavjudmi:', !!requestData.fileUrl);
       console.log('Fayl URL:', requestData.fileUrl);
+      console.log('Fayl nomi:', requestData.fileName);
+      console.log('FormData holati:', {
+        name: formData.name,
+        phone: formData.phone,
+        service: formData.service,
+        file: formData.file?.name,
+        fileUrl: formData.fileUrl
+      });
       
       console.log('Form yuborish jarayoni boshlanmoqda...');
       console.log('Request data:', requestData);

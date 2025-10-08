@@ -76,6 +76,8 @@ export default async function handler(req, res) {
       console.log('Lead data prepared:', leadData);
       console.log('File URL mavjudmi:', !!leadData.fileUrl);
       console.log('File URL qiymati:', leadData.fileUrl);
+      console.log('File name mavjudmi:', !!leadData.fileName);
+      console.log('File name qiymati:', leadData.fileName);
       
       let validatedData;
       try {

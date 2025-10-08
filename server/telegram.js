@@ -61,7 +61,9 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
     console.log('Fayl tekshiruvi:', {
       fileUrl: leadData.fileUrl,
       hasFileUrl: !!leadData.fileUrl,
-      fileUrlType: typeof leadData.fileUrl
+      fileUrlType: typeof leadData.fileUrl,
+      fileName: leadData.fileName,
+      hasFileName: !!leadData.fileName
     });
     
     if (leadData.fileUrl) {
