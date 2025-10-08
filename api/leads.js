@@ -1,13 +1,47 @@
+import 'dotenv/config';
 import { storage } from '../server/storage.js';
 import { insertLeadSchema } from '@shared/schema.js';
 import { sendLeadToTelegram } from '../server/telegram.js';
+import { randomUUID } from 'crypto';
 
 export default async function handler(req, res) {
+  // CORS headers
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+  if (req.method === 'OPTIONS') {
+    res.status(200).end();
+    return;
+  }
+
   if (req.method === 'POST') {
     try {
       console.log('Kelgan ma\'lumotlar:', req.body);
-      const validatedData = insertLeadSchema.parse(req.body);
-      const lead = await storage.createLead(validatedData);
+      
+      const leadData = {
+        ...req.body,
+        fileUrl: null // Vercel'da file upload hozircha yo'q
+      };
+      
+      const validatedData = insertLeadSchema.parse(leadData);
+      
+      // Vercel'da database muammosi bo'lsa ham Telegram'ga yuborish
+      let lead;
+      try {
+        lead = await storage.createLead(validatedData);
+        console.log(`New lead received: ${lead.name} - ${lead.serviceType}`);
+      } catch (dbError) {
+        console.log('Database error, but continuing with Telegram:', dbError);
+        // Database muammosi bo'lsa ham Telegram'ga yuboramiz
+        lead = {
+          ...validatedData,
+          id: randomUUID(),
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+      }
       
       // Telegram kanalga yuborish
       console.log('Telegram yuborishga harakat qilinmoqda...');
@@ -24,6 +58,7 @@ export default async function handler(req, res) {
         telegramSent: telegramResult.success
       });
     } catch (error) {
+      console.error('Lead creation error:', error);
       res.status(400).json({ 
         success: false, 
         message: "Ma'lumotlarda xatolik bor", 
@@ -42,7 +77,7 @@ export default async function handler(req, res) {
       });
     }
   } else {
-    res.setHeader('Allow', ['GET', 'POST']);
+    res.setHeader('Allow', ['GET', 'POST', 'OPTIONS']);
     res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 };
