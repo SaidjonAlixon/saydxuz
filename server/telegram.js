@@ -128,17 +128,18 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
           // Base64 faylni Buffer'ga o'tkazamiz
           const fileBuffer = Buffer.from(base64Data, 'base64');
           
-          // Fayl nomini to'g'ri belgilash uchun
-          const fileStream = {
-            value: fileBuffer,
-            options: {
-              filename: fileName,
-              contentType: mimeType
-            }
-          };
+          // Telegram Bot API uchun to'g'ri format
+          const fileStream = fileBuffer;
 
           // Faylni alohida yuboramiz
           let fileResult;
+          console.log('Fayl yuborish jarayoni:', {
+            fileType,
+            fileName,
+            fileSize: fileBuffer.length,
+            mimeType
+          });
+          
           if (fileType === 'photo') {
             fileResult = await bot.sendPhoto(CHANNEL_ID, fileStream, {
               caption: fileCaption,
@@ -158,7 +159,8 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
             // Barcha boshqa fayllar uchun document sifatida yuboramiz
             fileResult = await bot.sendDocument(CHANNEL_ID, fileStream, {
               caption: fileCaption,
-              parse_mode: 'Markdown'
+              parse_mode: 'Markdown',
+              filename: fileName
             });
           }
 
