@@ -145,6 +145,17 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
       formDataToSubmit.append('phone', formData.phone);
       formDataToSubmit.append('serviceType', formData.service);
       
+      // Debug uchun ma'lumotlarni console'ga chiqaramiz
+      console.log('Yuborilayotgan ma\'lumotlar:', {
+        name: formData.name,
+        phone: formData.phone,
+        serviceType: formData.service,
+        telegram: formData.telegram,
+        budget: formData.budget,
+        timeline: formData.timeline,
+        description: formData.description
+      });
+      
       if (formData.telegram) formDataToSubmit.append('telegram', formData.telegram);
       if (formData.budget) formDataToSubmit.append('budget', formData.budget);
       if (formData.timeline) formDataToSubmit.append('timeline', formData.timeline);

@@ -22,6 +22,19 @@ export default async function handler(req, res) {
       console.log('Body type:', typeof req.body);
       console.log('Body keys:', Object.keys(req.body || {}));
       
+      // FormData'ni parse qilish uchun
+      if (req.body && typeof req.body === 'object') {
+        console.log('Parsed body values:', {
+          name: req.body.name,
+          phone: req.body.phone,
+          serviceType: req.body.serviceType,
+          telegram: req.body.telegram,
+          budget: req.body.budget,
+          timeline: req.body.timeline,
+          description: req.body.description
+        });
+      }
+      
       // Required field'larni tekshiramiz
       if (!req.body.name || !req.body.phone || !req.body.serviceType) {
         console.log('Missing required fields:', {
