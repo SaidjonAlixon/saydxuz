@@ -20,10 +20,28 @@ export default async function handler(req, res) {
     try {
       console.log('Kelgan ma\'lumotlar:', req.body);
       
+      // Required field'larni tekshiramiz
+      if (!req.body.name || !req.body.phone || !req.body.serviceType) {
+        return res.status(400).json({
+          success: false,
+          message: "Ism, telefon va xizmat turi majburiy maydonlar"
+        });
+      }
+      
       const leadData = {
-        ...req.body,
-        fileUrl: null // Vercel'da file upload hozircha yo'q
+        name: req.body.name,
+        phone: req.body.phone,
+        serviceType: req.body.serviceType,
+        telegram: req.body.telegram || null,
+        email: req.body.email || null,
+        budget: req.body.budget || null,
+        timeline: req.body.timeline || null,
+        description: req.body.description || null,
+        fileUrl: null, // Vercel'da file upload hozircha yo'q
+        source: req.body.source || "website"
       };
+      
+      console.log('Lead data prepared:', leadData);
       
       const validatedData = insertLeadSchema.parse(leadData);
       
