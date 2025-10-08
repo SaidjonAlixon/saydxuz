@@ -143,7 +143,14 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
               }));
               toast({
                 title: "Fayl yuklandi",
-                description: `${file.name} muvaffaqiyatli yuklandi`,
+                description: `${file.name} muvaffaqiyatli yuklandi va Telegram'ga yuboriladi`,
+              });
+              
+              // Debug uchun
+              console.log('Fayl yuklandi va formData yangilandi:', {
+                fileName: file.name,
+                fileUrl: uploadResult.fileUrl,
+                fileType: file.type
               });
             } else {
               throw new Error(uploadResult.message);
@@ -250,11 +257,14 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
         timeline: formData.timeline || null,
         description: formData.description || null,
         fileUrl: formData.fileUrl || null,
+        fileName: formData.file?.name || null,
         source: "website"
       };
       
       // Debug uchun ma'lumotlarni console'ga chiqaramiz
       console.log('Yuborilayotgan ma\'lumotlar:', requestData);
+      console.log('Fayl mavjudmi:', !!requestData.fileUrl);
+      console.log('Fayl URL:', requestData.fileUrl);
       
       const response = await fetch('/api/leads', {
         method: 'POST',

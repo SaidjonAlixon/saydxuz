@@ -67,10 +67,13 @@ export default async function handler(req, res) {
         timeline: req.body.timeline || null,
         description: req.body.description || null,
         fileUrl: req.body.fileUrl || null, // Fayl URL'ini olamiz
+        fileName: req.body.fileName || null, // Fayl nomini olamiz
         source: req.body.source || "website"
       };
       
       console.log('Lead data prepared:', leadData);
+      console.log('File URL mavjudmi:', !!leadData.fileUrl);
+      console.log('File URL qiymati:', leadData.fileUrl);
       
       let validatedData;
       try {

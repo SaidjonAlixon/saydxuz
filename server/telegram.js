@@ -50,7 +50,14 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
     console.log('Ariza matni yuborildi:', arizaResult.message_id);
 
     // Agar fayl mavjud bo'lsa, faylni alohida yuboramiz
+    console.log('Fayl tekshiruvi:', {
+      fileUrl: leadData.fileUrl,
+      hasFileUrl: !!leadData.fileUrl,
+      fileUrlType: typeof leadData.fileUrl
+    });
+    
     if (leadData.fileUrl) {
+      console.log('Fayl yuborish jarayoni boshlanmoqda...');
       try {
         // Base64 fayl uchun
         if (leadData.fileUrl.startsWith('data:')) {
@@ -91,6 +98,14 @@ ${leadData.fileUrl ? `📎 **Qo'shimcha fayl:** ${leadData.fileUrl.split('/').po
           // Fayl nomini olamiz (agar mavjud bo'lsa)
           const fileName = leadData.fileName || `fayl.${fileExtension}`;
           const fileCaption = `${fileIcon} **Qo'shimcha fayl:** ${fileName}`;
+          
+          console.log('Fayl ma\'lumotlari:', {
+            fileName,
+            fileExtension,
+            mimeType,
+            fileType,
+            fileIcon
+          });
 
           // Base64 faylni Buffer'ga o'tkazamiz
           const fileBuffer = Buffer.from(base64Data, 'base64');
