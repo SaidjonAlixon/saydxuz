@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Send, Upload, X } from "lucide-react";
+import { Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface FormData {
@@ -17,8 +17,6 @@ interface FormData {
   budget: string;
   timeline: string;
   description: string;
-  file: File | null;
-  fileUrl: string | null;
 }
 
 interface QuickLeadFormProps {
@@ -61,9 +59,7 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
     service: defaultService || "",
     budget: "",
     timeline: "",
-    description: "",
-    file: null,
-    fileUrl: null
+    description: ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<{[key: string]: string}>({});
@@ -100,109 +96,6 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
     setFieldErrors(prev => ({ ...prev, [fieldName]: error }));
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 15 * 1024 * 1024) { // 15MB limit
-        toast({
-          title: "Fayl juda katta",
-          description: "Fayl hajmi 15MB dan katta bo'lmasligi kerak",
-          variant: "destructive"
-        });
-        return;
-      }
-
-      try {
-        // Faylni base64 formatiga o'tkazamiz
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          const base64String = event.target?.result as string;
-          const base64Data = base64String.split(',')[1]; // data:type;base64, qismini olib tashlaymiz
-          
-          try {
-            // Faylni serverga yuboramiz
-            const uploadResponse = await fetch('/api/upload', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                file: base64Data,
-                fileName: file.name,
-                fileType: file.type,
-                originalName: file.name
-              })
-            });
-
-            const uploadResult = await uploadResponse.json();
-            
-            if (uploadResult.success) {
-              setFormData(prev => ({ 
-                ...prev, 
-                file,
-                fileUrl: uploadResult.fileUrl 
-              }));
-              // Toast xabari olib tashlandi - fayl yuklanganda xabar chiqmasin
-              
-              // Debug uchun
-              console.log('Fayl yuklandi va formData yangilandi:', {
-                fileName: file.name,
-                fileUrl: uploadResult.fileUrl,
-                fileType: file.type,
-                formDataUpdated: true
-              });
-              
-              // FormData yangilanganini tekshiramiz
-              console.log('Yangilangan formData:', {
-                name: formData.name,
-                phone: formData.phone,
-                service: formData.service,
-                file: file.name,
-                fileUrl: uploadResult.fileUrl
-              });
-            } else {
-              throw new Error(uploadResult.message);
-            }
-          } catch (uploadError) {
-            console.error('Fayl yuklashda xatolik:', uploadError);
-            console.error('Upload error details:', {
-              error: uploadError,
-              fileName: file.name,
-              fileSize: file.size,
-              fileType: file.type,
-              message: uploadError.message
-            });
-            
-            // Fayl yuklashda xatolik bo'lsa ham form yuborishga ruxsat beramiz
-            setFormData(prev => ({ 
-              ...prev, 
-              file,
-              fileUrl: null // Fayl yuklanmagan
-            }));
-            
-            toast({
-              title: "Fayl yuklashda xatolik",
-              description: "Fayl yuklanmadi, lekin ariza yuborish mumkin",
-              variant: "destructive"
-            });
-          }
-        };
-        
-        reader.readAsDataURL(file);
-      } catch (error) {
-        console.error('Fayl o\'qishda xatolik:', error);
-        toast({
-          title: "Xatolik",
-          description: "Faylni o'qishda muammo yuz berdi",
-          variant: "destructive"
-        });
-      }
-    }
-  };
-
-  const removeFile = () => {
-    setFormData(prev => ({ ...prev, file: null, fileUrl: null }));
-  };
 
   const validateField = (fieldName: string, value: string): string => {
     switch (fieldName) {
@@ -279,28 +172,11 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
         budget: formData.budget || null,
         timeline: formData.timeline || null,
         description: formData.description || null,
-        fileUrl: formData.fileUrl || null,
-        fileName: formData.file?.name || null,
         source: "website"
       };
       
-      // Fayl mavjudligini tekshiramiz
-      if (formData.file && !formData.fileUrl) {
-        console.warn('Fayl mavjud, lekin fileUrl yo\'q. Fayl yuklanmagan bo\'lishi mumkin.');
-      }
-      
       // Debug uchun ma'lumotlarni console'ga chiqaramiz
       console.log('Yuborilayotgan ma\'lumotlar:', requestData);
-      console.log('Fayl mavjudmi:', !!requestData.fileUrl);
-      console.log('Fayl URL:', requestData.fileUrl);
-      console.log('Fayl nomi:', requestData.fileName);
-      console.log('FormData holati:', {
-        name: formData.name,
-        phone: formData.phone,
-        service: formData.service,
-        file: formData.file?.name,
-        fileUrl: formData.fileUrl
-      });
       
       console.log('Form yuborish jarayoni boshlanmoqda...');
       console.log('Request data:', requestData);
@@ -333,9 +209,7 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
           service: defaultService || "",
           budget: "",
           timeline: "",
-          description: "",
-          file: null,
-          fileUrl: null
+          description: ""
         });
       } else {
         console.error('Form yuborishda xatolik:', result);
@@ -505,42 +379,6 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="file">Qo'shimcha fayl (≤15MB)</Label>
-            <div className="space-y-2">
-              <input
-                id="file"
-                type="file"
-                onChange={handleFileChange}
-                className="hidden"
-                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
-                data-testid="input-file"
-              />
-              {!formData.file ? (
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={() => document.getElementById('file')?.click()}
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Fayl yuklash
-                </Button>
-              ) : (
-                <div className="flex items-center justify-between p-2 bg-muted rounded-lg">
-                  <span className="text-sm truncate">{formData.file.name}</span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    onClick={removeFile}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              )}
-            </div>
-          </div>
 
           <Button 
             type="submit" 
