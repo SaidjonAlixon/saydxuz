@@ -169,11 +169,20 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
               error: uploadError,
               fileName: file.name,
               fileSize: file.size,
-              fileType: file.type
+              fileType: file.type,
+              message: uploadError.message
             });
+            
+            // Fayl yuklashda xatolik bo'lsa ham form yuborishga ruxsat beramiz
+            setFormData(prev => ({ 
+              ...prev, 
+              file,
+              fileUrl: null // Fayl yuklanmagan
+            }));
+            
             toast({
               title: "Fayl yuklashda xatolik",
-              description: "Faylni yuklashda muammo yuz berdi",
+              description: "Fayl yuklanmadi, lekin ariza yuborish mumkin",
               variant: "destructive"
             });
           }
@@ -274,6 +283,11 @@ export default function QuickLeadForm({ defaultService }: QuickLeadFormProps = {
         fileName: formData.file?.name || null,
         source: "website"
       };
+      
+      // Fayl mavjudligini tekshiramiz
+      if (formData.file && !formData.fileUrl) {
+        console.warn('Fayl mavjud, lekin fileUrl yo\'q. Fayl yuklanmagan bo\'lishi mumkin.');
+      }
       
       // Debug uchun ma'lumotlarni console'ga chiqaramiz
       console.log('Yuborilayotgan ma\'lumotlar:', requestData);
