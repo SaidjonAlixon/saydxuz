@@ -86,7 +86,7 @@ export default function Home() {
               <Card className="text-center p-4 hover:shadow-lg transition-shadow">
                 <CardContent className="pt-2">
                   <div className="text-2xl font-bold text-primary">50+</div>
-                  <div className="text-sm text-muted-foreground">Bajarilgan loyiha</div>
+                  <div className="text-sm text-muted-foreground">Yakunlangan</div>
                 </CardContent>
               </Card>
             </motion.div>
@@ -98,8 +98,8 @@ export default function Home() {
             >
               <Card className="text-center p-4 hover:shadow-lg transition-shadow">
                 <CardContent className="pt-2">
-                  <div className="text-2xl font-bold text-primary">30+</div>
-                  <div className="text-sm text-muted-foreground">Mamnun mijoz</div>
+                  <div className="text-2xl font-bold text-primary">10+</div>
+                  <div className="text-sm text-muted-foreground">Bajarilmoqda</div>
                 </CardContent>
               </Card>
             </motion.div>
