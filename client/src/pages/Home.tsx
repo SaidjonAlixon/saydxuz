@@ -4,12 +4,45 @@ import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Users, Star, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
+import { useState, useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
 import ServiceGrid from "@/components/ServiceGrid";
 import NewsCard from "@/components/NewsCard";
 import PortfolioCard from "@/components/PortfolioCard";
 import heroImage from "@assets/generated_images/Modern_tech_workspace_hero_c9c8682e.png";
 import mobileApp from "@assets/generated_images/Mobile_app_interface_mockup_5376ed7a.png";
+
+// CountUp komponenti
+const CountUp = ({ end, duration = 2000, suffix = "" }: { end: number; duration?: number; suffix?: string }) => {
+  const [count, setCount] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (isVisible) {
+      let startTime: number;
+      const animate = (currentTime: number) => {
+        if (!startTime) startTime = currentTime;
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        setCount(Math.floor(progress * end));
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+      requestAnimationFrame(animate);
+    }
+  }, [isVisible, end, duration]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      onViewportEnter={() => setIsVisible(true)}
+    >
+      {count}{suffix}
+    </motion.div>
+  );
+};
 
 //todo: remove mock functionality  
 const newsData = [
@@ -74,62 +107,76 @@ export default function Home() {
       <HeroSection />
 
       {/* Stats Section */}
-      <section className="py-12 px-4">
+      <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+          <motion.div 
+            className="text-center mb-6"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            <h2 className="text-lg md:text-xl font-medium text-muted-foreground leading-relaxed max-w-4xl mx-auto">
               Biz ishga tushurib topshirgan loyihalar va ayni vaqtda bajarilayotgan loyihalarni ko'rishingiz mumkin.
             </h2>
-          </div>
+          </motion.div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, type: "spring", stiffness: 100 }}
             >
-              <Card className="text-center p-4 hover:shadow-lg transition-shadow">
+              <Card className="text-center p-4 hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <CardContent className="pt-2">
-                  <div className="text-2xl font-bold text-primary">50+</div>
+                  <div className="text-2xl font-bold text-primary">
+                    <CountUp end={50} suffix="+" />
+                  </div>
                   <div className="text-sm text-muted-foreground">Yakunlangan</div>
                 </CardContent>
               </Card>
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              transition={{ duration: 0.6, delay: 0.2, type: "spring", stiffness: 100 }}
             >
-              <Card className="text-center p-4 hover:shadow-lg transition-shadow">
+              <Card className="text-center p-4 hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <CardContent className="pt-2">
-                  <div className="text-2xl font-bold text-primary">10+</div>
+                  <div className="text-2xl font-bold text-primary">
+                    <CountUp end={10} suffix="+" />
+                  </div>
                   <div className="text-sm text-muted-foreground">Bajarilmoqda</div>
                 </CardContent>
               </Card>
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.3, type: "spring", stiffness: 100 }}
             >
-              <Card className="text-center p-4 hover:shadow-lg transition-shadow">
+              <Card className="text-center p-4 hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <CardContent className="pt-2">
-                  <div className="text-2xl font-bold text-primary">4.9</div>
+                  <div className="text-2xl font-bold text-primary">
+                    <CountUp end={4.9} duration={1500} />
+                  </div>
                   <div className="text-sm text-muted-foreground">Reyting</div>
                 </CardContent>
               </Card>
             </motion.div>
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.3 }}
+              transition={{ duration: 0.6, delay: 0.4, type: "spring", stiffness: 100 }}
             >
-              <Card className="text-center p-4 hover:shadow-lg transition-shadow">
+              <Card className="text-center p-4 hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <CardContent className="pt-2">
-                  <div className="text-2xl font-bold text-primary">24/7</div>
+                  <div className="text-2xl font-bold text-primary">
+                    24/7
+                  </div>
                   <div className="text-sm text-muted-foreground">Yordam</div>
                 </CardContent>
               </Card>
